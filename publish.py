@@ -35,12 +35,15 @@ def main():
         print("まだGitHubとつながっていないので、公開はしていません（README.md の「公開する」を参照）。")
         return
     git("add", "-A")
-    if git("diff", "--cached", "--quiet").returncode == 0:
+    if git("diff", "--cached", "--quiet").returncode != 0:
+        r = git("commit", "-m", f"署名の更新 {date.today().isoformat()}")
+        if r.returncode != 0:
+            print("保存（コミット）に失敗しました：\n" + r.stdout + r.stderr)
+            return
+    # 保存したけれど、まだGitHubに送っていないものがあるか
+    ahead = git("rev-list", "--count", "@{u}..HEAD").stdout.strip()
+    if ahead == "0":
         print("変更がないので、公開は不要でした。")
-        return
-    r = git("commit", "-m", f"署名の更新 {date.today().isoformat()}")
-    if r.returncode != 0:
-        print("保存（コミット）に失敗しました：\n" + r.stdout + r.stderr)
         return
     r = git("push")
     if r.returncode != 0:
