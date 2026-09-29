@@ -263,7 +263,7 @@ def build_summary_pages(items, tag_defs, config, hashtag_of):
             "__SHARE_JS__": SHARE_JS,
             "__SIGNED_JS__": SIGNED_JS,
             "__ID__": json.dumps(it["id"]),
-            "__CHANGE_NOTE__": ("<li>change.org の署名です。内容をよく確かめたうえで、ご自身で判断してください。</li>"
+            "__CHANGE_NOTE__": ("<li>change.org はご自身で判断してください。</li>"
                                 if it["site"] == "Change" else ""),
             "__SITE_NAME__": e(config["site_name"]),
             "__PAGE_URL__": e(site_url + summary_path(it)),
