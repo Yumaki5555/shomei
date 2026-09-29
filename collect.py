@@ -28,6 +28,7 @@ HERE = Path(__file__).parent
 DATA_PATH = HERE / "data.json"
 STATE_PATH = HERE / "state.json"
 KEYWORDS_PATH = HERE / "keywords.json"
+CONFIG_PATH = HERE / "config.json"
 
 UA = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
@@ -386,6 +387,9 @@ def merge_keyword(item, keyword, tag):
 def main():
     args = parse_args()
     themes = load_json(KEYWORDS_PATH, {})
+    # この日より前に始まった署名は候補に入れない（開始日がわからないものは入れる）
+    min_start = load_json(CONFIG_PATH, {}).get("min_start_date", "")
+    too_old = lambda start: bool(min_start and start and start < min_start)
     if args.theme:
         unknown = set(args.theme) - set(themes)
         if unknown:
@@ -471,8 +475,8 @@ def main():
                         if base["id"] in items:
                             merge_keyword(items[base["id"]], keyword, tag)
                             continue
-                        if base["ended"]:
-                            continue  # 終了したものは載せない
+                        if base["ended"] or too_old(base["start"]):
+                            continue  # 終了したもの・古すぎるものは載せない
                         it = new_item(base, theme_name, keyword, tag, today)
                         items[it["id"]] = it
                         added.append(it)
@@ -491,8 +495,8 @@ def main():
                     except requests.RequestException as e:
                         print(f"  Voice詳細エラー({base['event_id']}): {e}")
                         continue
-                    if d["ended"]:
-                        continue  # 終了したものは載せない
+                    if d["ended"] or too_old(d.get("start", "")):
+                        continue  # 終了したもの・古すぎるものは載せない
                     d.update({"id": base["id"], "site": "Voice", "title": d["title"] or base["title"]})
                     it = new_item(d, theme_name, keyword, tag, today)
                     items[it["id"]] = it
