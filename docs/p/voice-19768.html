@@ -67,7 +67,7 @@ footer{font-size:.78rem;color:var(--sub);margin-top:20px}
 <body>
 <div class="wrap">
 <a class="back" href="../">← 署名の一覧（署名掲示板）</a>
-<div class="meta"><span class="tag" style="background:#be185d">民泊</span><span class="left" id="left" hidden></span></div>
+<div class="meta"><span class="pick">⭐おすすめ</span><span class="tag" style="background:#be185d">民泊</span><span class="left" id="left" hidden></span></div>
 <h1>【文京区本駒込4-20-1】条例改正前の駆け込み旅館業計画に対し、トラブルを未然に防ぐ行政指導・監視強化を求めます！</h1>
 <img class="shot" src="../img/voice-19768.jpg" alt="署名ページの画面" loading="lazy">
 <div class="countbox"><span><small>賛同者</small> <b>284</b> 人</span></div>
@@ -125,7 +125,7 @@ if (end) {
   left.textContent = dl < 0 ? '終了' : dl === 0 ? '本日終了' : `あと${dl}日`;
   if (dl <= 14) left.classList.add('urgent');
 }
-document.getElementById('share').onclick = () => shareX("✍️【署名募集中】（2026/10/4まで）\n\n「【文京区本駒込4-20-1】条例改正前の駆け込み旅館業計画に対し、トラブルを未然に防ぐ行政指導・監視強化を求…」\n\nいま284人が賛同しています。\nあなたも一筆を🙏\n#署名 #民泊\n\nhttps://voice.charity/events/19768");
+document.getElementById('share').onclick = () => shareX("⭐【おすすめ署名】（2026/10/4まで）\n\n「【文京区本駒込4-20-1】条例改正前の駆け込み旅館業計画に対し、トラブルを未然に防ぐ行政指導・監視強化を求…」\n\nいま284人が賛同しています。\nあなたも一筆を🙏\n#署名 #民泊\n\nhttps://voice.charity/events/19768");
 
 const SIGNED_KEY = 'shomei-signed';
 function loadSigned(){ try { return JSON.parse(localStorage.getItem(SIGNED_KEY) || '{}') || {}; } catch (e) { return {}; } }
