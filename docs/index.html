@@ -109,10 +109,10 @@ footer{font-size:.8rem;color:var(--sub);padding:20px 0 40px;border-top:1px solid
     <input id="q" type="search" placeholder="キーワードで探す（例：大阪、墓地）">
     <select id="pref"><option value="">すべての地域</option></select>
     <select id="sort">
+      <option value="new" selected>新着順</option>
       <option value="count">署名が多い順</option>
       <option value="rate">最近伸びている順</option>
       <option value="end">終了日が近い順</option>
-      <option value="new">新着順</option>
     </select>
     <label class="hide-signed"><input type="checkbox" id="hideSigned"> 署名済みを隠す</label>
   </div>
@@ -144,7 +144,7 @@ function toggleSigned(id){
 const D = JSON.parse(document.getElementById('data').textContent);
 const tagColor = Object.fromEntries(D.tags.map(t => [t.name, t.color]));
 const charaOf = Object.fromEntries(D.tags.map(t => [t.name, t.chara]));
-const state = { tag: '', q: '', pref: '', sort: 'count', hideSigned: false };
+const state = { tag: '', q: '', pref: '', sort: 'new', hideSigned: false };
 const PICK = '__pick__';
 
 // タブに合わせて、しょめたんの絵を切り替える（そのテーマの絵が無ければ「すべて」の絵）
@@ -195,7 +195,8 @@ const sorters = {
   count: (a, b) => (b.count || 0) - (a.count || 0),
   rate:  (a, b) => (b.rate || 0) - (a.rate || 0),
   end:   (a, b) => (a.end || '9999') < (b.end || '9999') ? -1 : (a.end || '9999') > (b.end || '9999') ? 1 : 0,
-  new:   (a, b) => (b.found + b.start) < (a.found + a.start) ? -1 : 1,
+  // 新着順：このサイトに加わった日が新しい順 → 同じ日なら開始日が新しい順（開始日がわからないものは後ろ）
+  new:   (a, b) => (b.found || '').localeCompare(a.found || '') || (b.start || '').localeCompare(a.start || ''),
 };
 
 function render(){
