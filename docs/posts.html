@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>X投稿文｜署名掲示板</title>
+<style>
+:root{--bg:#f6f5f2;--card:#fff;--ink:#1c1b19;--sub:#5f5c56;--line:#e3e0d9}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16161a;--card:#202026;--ink:#ecebe8;--sub:#a8a59f;--line:#34343c}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Hiragino Sans","Noto Sans JP","Meiryo",sans-serif}
+.wrap{max-width:640px;margin:0 auto;padding:16px}
+h1{font-size:1.3rem;margin:8px 0 2px}
+p{color:var(--sub);font-size:.88rem;margin:0 0 12px}
+section{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:12px 0}
+h2{font-size:.95rem;margin:0 0 6px}
+h2 small{color:var(--sub);font-weight:400}
+pre{white-space:pre-wrap;word-break:break-all;font-family:inherit;font-size:.9rem;margin:0 0 10px;line-height:1.6}
+.btns{display:flex;gap:8px}
+.btns a,.btns button{flex:1;text-align:center;padding:9px;border-radius:8px;font-size:.9rem;font-weight:700;
+  text-decoration:none;border:1px solid var(--line);font-family:inherit;cursor:pointer}
+.x{background:var(--ink);color:var(--bg)}
+button{background:var(--card);color:var(--ink)}
+</style></head>
+<body><div class="wrap">
+<p><a href="./">← 署名の一覧</a></p>
+<h1>X投稿文</h1>
+<p>署名数の確認日：2026-09-29。「𝕏アプリで投稿」を押すと、文章が入った状態でXの投稿画面が開きます。内容を確認してから投稿してください。</p>
+<section><h2>まとめ <small>98/140字</small></h2><pre>いま賛同を集めている署名を0件まとめました✍️
+移民・外国人政策・モスク・土葬・民泊など、暮らしに身近なテーマも。
+気になるものから一筆を🙏
+https://yumaki5555.github.io/shomei/
+#署名</pre><div class="btns"><button type="button" class="x" onclick="post(this)">𝕏アプリで投稿</button><button type="button" onclick="copy(this)">コピー</button></div></section>
+</div>
+<script>
+
+// スマホではXアプリを直接開く（アプリ内ブラウザで毎回ログインを求められないように）。
+// アプリが開かなかったときだけ、1.5秒後にブラウザ版Xを開く。
+function shareX(text){
+  const web = 'https://x.com/intent/post?text=' + encodeURIComponent(text);
+  if (!/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) { window.open(web, '_blank', 'noopener'); return; }
+  const fallback = setTimeout(() => { if (!document.hidden) location.href = web; }, 1500);
+  document.addEventListener('visibilitychange', () => { if (document.hidden) clearTimeout(fallback); }, { once: true });
+  location.href = 'twitter://post?message=' + encodeURIComponent(text);
+}
+
+function post(btn){ shareX(btn.closest('section').querySelector('pre').textContent); }
+function copy(btn){
+  const text = btn.closest('section').querySelector('pre').textContent;
+  navigator.clipboard.writeText(text).then(() => { btn.textContent = 'コピーしました'; setTimeout(() => btn.textContent = 'コピー', 1500); });
+}
+</script>
+</body></html>

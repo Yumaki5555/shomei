@@ -1,0 +1,11 @@
+# GitHubに送らない（公開しない）もの
+__pycache__/
+*.tmp
+.env
+.claude/
+old_notion/
+# 集めた署名の台帳（「載せない」にした候補も入っているので公開しない。Dropboxに残る）
+data.json
+state.json
+# しょめたんの元の絵（重いので、ページ用に軽くした docs/chara だけを公開する）
+しょめたん/

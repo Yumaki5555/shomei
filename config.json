@@ -1,0 +1,17 @@
+{
+  "_説明": "サイトの基本設定です。site_url は公開後に実際のアドレスに書き換えてください。tags はタグごとの色・Xのハッシュタグ・しょめたんの絵です（keywords.json の tag と同じ名前にします。hashtag と chara は空でもOK）。chara は「しょめたん」フォルダの中のファイル名です。",
+  "site_name": "署名掲示板",
+  "site_description": "いま賛同を集めている署名運動を、テーマ別・地域別にまとめています。あなたの一筆が声になります。",
+  "site_url": "https://yumaki5555.github.io/shomei/",
+  "main_hashtag": "#署名",
+  "urgent_days": 14,
+  "chara_all": "１筆でも.png",
+  "chara_pick": "しょめたん最後まで頑張る.png",
+  "tags": [
+    {"name": "移民・外国人政策", "color": "#b45309", "hashtag": "#移民政策", "chara": "移民政策.png"},
+    {"name": "モスク・土葬", "color": "#047857", "hashtag": "#土葬", "chara": ""},
+    {"name": "民泊", "color": "#be185d", "hashtag": "#民泊", "chara": "民泊.png"},
+    {"name": "メガソーラー・風力", "color": "#4d7c0f", "hashtag": "#メガソーラー", "chara": "メガソーラー.png"},
+    {"name": "リコール", "color": "#7c3aed", "hashtag": "#リコール", "chara": "リコール署名.png"}
+  ]
+}

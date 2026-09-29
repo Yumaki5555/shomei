@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>署名掲示板｜いま賛同を集めている署名の一覧</title>
+<meta name="description" content="いま賛同を集めている署名運動を、テーマ別・地域別にまとめています。あなたの一筆が声になります。">
+<meta property="og:type" content="website">
+<meta property="og:title" content="署名掲示板｜いま集まっている署名 0件">
+<meta property="og:description" content="いま賛同を集めている署名運動を、テーマ別・地域別にまとめています。あなたの一筆が声になります。">
+<meta property="og:url" content="https://yumaki5555.github.io/shomei/">
+<meta property="og:image" content="https://yumaki5555.github.io/shomei/chara/1fb2f4a192.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✍️</text></svg>">
+<style>
+
+:root{--bg:#f6f5f2;--card:#fff;--ink:#1c1b19;--sub:#5f5c56;--line:#e3e0d9;--accent:#1d4ed8;--urgent:#dc2626;--urgent-bg:#fef2f2;--chip:#efede8;--pick:#b45309;--pick-bg:#fff7e0;--up:#15803d}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16161a;--card:#202026;--ink:#ecebe8;--sub:#a8a59f;--line:#34343c;--accent:#7aa2ff;--urgent:#f87171;--urgent-bg:#3a1e1e;--chip:#2c2c33;--pick:#fbbf24;--pick-bg:#3a3020;--up:#4ade80}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Hiragino Sans","Noto Sans JP","Yu Gothic UI","Meiryo",sans-serif;line-height:1.6}
+a{color:var(--accent)}
+.tag{color:#fff;padding:1px 8px;border-radius:6px;font-weight:600}
+.cat{background:var(--chip);padding:1px 8px;border-radius:6px;color:var(--sub)}
+.pick{background:var(--pick-bg);color:var(--pick);padding:1px 8px;border-radius:6px;font-weight:700;border:1px solid var(--pick)}
+.left{font-weight:700;padding:1px 8px;border-radius:6px;background:var(--chip);color:var(--ink)}
+.left.urgent{background:var(--urgent-bg);color:var(--urgent)}
+.grow{color:var(--up);font-weight:600}
+.btn{display:inline-block;border:0;cursor:pointer;font-family:inherit;text-decoration:none;border-radius:8px;padding:5px 12px;font-size:.82rem;font-weight:600}
+.btn.go{background:var(--accent);color:#fff}
+.btn.sum{background:var(--chip);color:var(--ink)}
+.btn.x{background:var(--ink);color:var(--bg)}
+.btn.done{background:var(--chip);color:var(--sub);border:1.5px dashed var(--line)}
+.btn.done.on{background:var(--up);color:#fff;border-style:solid;border-color:transparent}
+.signedmark{background:var(--up);color:#fff;padding:1px 8px;border-radius:6px;font-weight:700}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 18px;border-radius:10px;font-size:.92rem;opacity:0;transition:opacity .2s;pointer-events:none;z-index:9}
+.toast.show{opacity:1}
+
+.wrap{max-width:860px;margin:0 auto;padding:0 16px}
+header{padding:28px 0 12px}
+h1{font-size:1.6rem;margin:0 0 4px;letter-spacing:.02em}
+.lead{color:var(--sub);margin:0 0 12px;font-size:.95rem}
+.stats{display:flex;gap:10px;flex-wrap:wrap;font-size:.85rem;color:var(--sub)}
+.stats b{color:var(--ink);font-size:1.1rem}
+.filters{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0;border-bottom:1px solid var(--line)}
+.tagbar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.tagbtn{border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:5px 12px;font-size:.88rem;cursor:pointer;font-family:inherit}
+.tagbtn .n{opacity:.7;margin-left:4px;font-size:.8em}
+.tagbtn[aria-pressed="true"]{color:#fff;border-color:transparent}
+.row{display:flex;gap:6px;flex-wrap:wrap}
+.row input{flex:1 1 220px}
+.row select{flex:1 1 110px}
+.row input,.row select{min-width:0;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);font-size:.92rem;font-family:inherit}
+.count{font-size:.85rem;color:var(--sub);margin:10px 0 4px}
+ul.list{list-style:none;padding:0;margin:0 0 40px}
+.item{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:10px 0;border-left:5px solid var(--tagc,var(--line))}
+.item.picked{background:linear-gradient(var(--pick-bg),var(--card) 60px)}
+.meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:.8rem;color:var(--sub);margin-bottom:4px}
+.item h2{font-size:1rem;margin:4px 0 6px;font-weight:600;line-height:1.5}
+.item h2 a{color:var(--ink);text-decoration:none}
+.item h2 a:hover{text-decoration:underline}
+.who{font-size:.8rem;color:var(--sub);margin:0 0 8px;line-height:1.5;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.num{font-size:.9rem;margin:0 0 8px}
+.num b{font-size:1.15rem}
+.foot{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;font-size:.82rem;color:var(--sub)}
+.actions{display:flex;gap:6px;flex-wrap:wrap}
+.empty{text-align:center;color:var(--sub);padding:40px 0}
+.chara{margin:4px auto 12px;max-width:560px}
+.chara img{width:100%;height:auto;display:block;border-radius:14px;border:1px solid var(--line);transition:opacity .2s}
+.chara img.fade{opacity:0}
+.item.signed{opacity:.75}
+.hide-signed{display:inline-flex;align-items:center;gap:4px;font-size:.88rem;color:var(--sub);cursor:pointer;white-space:nowrap}
+footer{font-size:.8rem;color:var(--sub);padding:20px 0 40px;border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p style="font-size:.85rem;margin:0 0 10px"><a href="posts.html">📣 X投稿文ページ</a></p>
+  <h1>✍️ 署名掲示板</h1>
+  <p class="lead">いま賛同を集めている署名運動を、テーマ別・地域別にまとめています。あなたの一筆が声になります。</p>
+  <div class="stats"><span>掲載中 <b>0</b> 件</span><span id="mine"></span><span id="updated"></span></div>
+</header>
+
+<figure class="chara"><img id="chara" src="chara/1fb2f4a192.jpg" alt="しょめたん（署名をあつめる妖精）" width="800" height="533"></figure>
+
+<div class="filters">
+  <div class="tagbar" id="tagbar" role="group" aria-label="テーマで絞り込み"></div>
+  <div class="row">
+    <input id="q" type="search" placeholder="キーワードで探す（例：大阪、墓地）">
+    <select id="pref"><option value="">すべての地域</option></select>
+    <select id="sort">
+      <option value="count">署名が多い順</option>
+      <option value="rate">最近伸びている順</option>
+      <option value="end">終了日が近い順</option>
+      <option value="new">新着順</option>
+    </select>
+    <label class="hide-signed"><input type="checkbox" id="hideSigned"> 署名済みを隠す</label>
+  </div>
+</div>
+
+<p class="count" id="count"></p>
+<ul class="list" id="list"></ul>
+
+<footer>
+  出典：<a href="https://www.change.org/" target="_blank" rel="noopener">change.org</a>・<a href="https://voice.charity/" target="_blank" rel="noopener">Voice</a> の公開情報。
+  署名数は当サイトが確認した日の人数で、最新の人数とは異なる場合があります。必ず署名ページで内容をご確認ください。
+</footer>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+<script id="data" type="application/json">{"updated": "2026-09-29", "items": [], "tags": [{"name": "移民・外国人政策", "color": "#b45309", "chara": "chara/b7ce4fdce4.jpg"}, {"name": "モスク・土葬", "color": "#047857", "chara": ""}, {"name": "民泊", "color": "#be185d", "chara": "chara/41f73994f5.jpg"}, {"name": "メガソーラー・風力", "color": "#4d7c0f", "chara": "chara/68b41b3a75.jpg"}, {"name": "リコール", "color": "#7c3aed", "chara": "chara/91ab8c0bb1.jpg"}], "charaAll": "chara/1fb2f4a192.jpg", "charaPick": "chara/1cda7cb3d4.jpg", "urgentDays": 14}</script>
+<script>
+
+const SIGNED_KEY = 'shomei-signed';
+function loadSigned(){ try { return JSON.parse(localStorage.getItem(SIGNED_KEY) || '{}') || {}; } catch (e) { return {}; } }
+function saveSigned(s){ try { localStorage.setItem(SIGNED_KEY, JSON.stringify(s)); } catch (e) {} }
+function toggleSigned(id){
+  const s = loadSigned();
+  if (s[id]) delete s[id]; else s[id] = new Date().toISOString().slice(0, 10);
+  saveSigned(s);
+  return !!s[id];
+}
+
+const D = JSON.parse(document.getElementById('data').textContent);
+const tagColor = Object.fromEntries(D.tags.map(t => [t.name, t.color]));
+const charaOf = Object.fromEntries(D.tags.map(t => [t.name, t.chara]));
+const state = { tag: '', q: '', pref: '', sort: 'count', hideSigned: false };
+const PICK = '__pick__';
+
+// タブに合わせて、しょめたんの絵を切り替える（そのテーマの絵が無ければ「すべて」の絵）
+function showChara(){
+  const img = document.getElementById('chara');
+  const src = (state.tag === PICK ? D.charaPick : charaOf[state.tag]) || D.charaAll;
+  if (!src || img.getAttribute('src') === src) return;
+  img.classList.add('fade');
+  setTimeout(() => { img.onload = () => img.classList.remove('fade'); img.src = src; }, 150);
+}
+function toast(msg){
+  const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('show'), 1800);
+}
+
+function ymd(d){ return Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()); }
+function daysLeft(iso){ const [y,m,d] = iso.split('-').map(Number); return Math.round((Date.UTC(y, m-1, d) - ymd(new Date())) / 86400000); }
+function md(iso){ const [, m, d] = iso.split('-').map(Number); return `${m}/${d}`; }
+function esc(s){ return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+const num = n => n == null ? '—' : n.toLocaleString();
+
+[...new Set(D.items.map(i => i.pref).filter(Boolean))].sort().forEach(p => {
+  const o = document.createElement('option'); o.value = o.textContent = p;
+  document.getElementById('pref').appendChild(o);
+});
+
+const tagbar = document.getElementById('tagbar');
+const buttons = [{name:'', label:'すべて', color:'#444', n:D.items.length},
+                 {name:PICK, label:'⭐おすすめ', color:'#b45309', n:D.items.filter(i => i.pick).length},
+                 ...D.tags.map(t => ({...t, label:t.name, n:D.items.filter(i => i.tags.includes(t.name)).length}))];
+buttons.filter(t => t.name === '' || t.n).forEach(t => {
+  const b = document.createElement('button');
+  b.className = 'tagbtn'; b.type = 'button';
+  b.innerHTML = `${esc(t.label)}<span class="n">${t.n}</span>`;
+  b.dataset.tag = t.name; b.dataset.color = t.color;
+  b.onclick = () => { state.tag = t.name; showChara(); render(); };
+  tagbar.appendChild(b);
+});
+document.getElementById('hideSigned').onchange = e => { state.hideSigned = e.target.checked; render(); };
+
+document.getElementById('q').oninput = e => { state.q = e.target.value.trim(); render(); };
+document.getElementById('pref').onchange = e => { state.pref = e.target.value; render(); };
+document.getElementById('sort').onchange = e => { state.sort = e.target.value; render(); };
+if (D.updated) document.getElementById('updated').textContent = '署名数の確認日：' + D.updated;
+
+const sorters = {
+  count: (a, b) => (b.count || 0) - (a.count || 0),
+  rate:  (a, b) => (b.rate || 0) - (a.rate || 0),
+  end:   (a, b) => (a.end || '9999') < (b.end || '9999') ? -1 : (a.end || '9999') > (b.end || '9999') ? 1 : 0,
+  new:   (a, b) => (b.found + b.start) < (a.found + a.start) ? -1 : 1,
+};
+
+function render(){
+  const signed = loadSigned();
+  const mineN = D.items.filter(i => signed[i.id]).length;
+  document.getElementById('mine').innerHTML = mineN ? `あなたの署名 <b>${mineN}</b> 件` : '';
+  tagbar.querySelectorAll('.tagbtn').forEach(b => {
+    const on = b.dataset.tag === state.tag;
+    b.setAttribute('aria-pressed', on);
+    b.style.background = on ? b.dataset.color : '';
+  });
+  const items = D.items.filter(i =>
+    (!state.tag || (state.tag === PICK ? i.pick : i.tags.includes(state.tag))) &&
+    (!state.pref || i.pref === state.pref) &&
+    (!state.hideSigned || !signed[i.id]) &&
+    (!state.q || (i.title + i.starter + i.target + i.pref).includes(state.q))
+  ).sort((a, b) => (b.pick - a.pick) || sorters[state.sort](a, b));   // おすすめはいつも先頭
+  const label = document.querySelector('#sort option:checked').textContent;
+  document.getElementById('count').textContent = `${items.length} 件を表示中（⭐おすすめ → ${label}）`;
+  const list = document.getElementById('list');
+  if (!items.length){ list.innerHTML = '<li class="empty">条件に合う署名はありません</li>'; return; }
+  list.innerHTML = items.map(i => {
+    const first = i.tags[0];
+    let left = '';
+    if (i.end) {
+      const dl = daysLeft(i.end);
+      left = `<span class="left${dl <= D.urgentDays ? ' urgent' : ''}">${dl <= 0 ? '本日終了' : `あと${dl}日`}</span>`;
+    }
+    const who = [i.starter && `発起人：${esc(i.starter)}`, i.target && `提出先：${esc(i.target)}`].filter(Boolean).join('　');
+    const done = !!signed[i.id];
+    return `<li class="item${i.pick ? ' picked' : ''}${done ? ' signed' : ''}" style="${first ? '--tagc:' + tagColor[first] : ''}">
+      <div class="meta">${done ? '<span class="signedmark">✅署名済み</span>' : ''}${i.pick ? '<span class="pick">⭐おすすめ</span>' : ''}${left}
+        ${i.tags.map(t => `<span class="tag" style="background:${tagColor[t]}">${esc(t)}</span>`).join('')}
+        ${i.pref ? `<span class="cat">${esc(i.pref)}</span>` : ''}<span class="cat">${i.site === 'Change' ? 'change.org' : 'Voice'}</span></div>
+      <h2><a href="${esc(i.page)}">${esc(i.title)}</a></h2>
+      ${who ? `<p class="who">${who}</p>` : ''}
+      <p class="num">賛同 <b>${num(i.count)}</b> 人 ${i.grow > 0 ? `<span class="grow">（${md(i.growFrom)}から +${num(i.grow)}）</span>` : ''}</p>
+      <div class="foot"><span>${i.end ? `終了日 ${md(i.end)}` : ''}</span>
+        <span class="actions"><a class="btn sum" href="${esc(i.page)}">まとめ</a>
+        <a class="btn go" href="${esc(i.url)}" target="_blank" rel="noopener">署名ページへ</a>
+        <button type="button" class="btn x" data-id="${esc(i.id)}">𝕏でシェア</button>
+        <button type="button" class="btn done${done ? ' on' : ''}" data-signed="${esc(i.id)}" aria-pressed="${done}">${done ? '✅署名した' : '☐署名した'}</button></span></div>
+    </li>`;
+  }).join('');
+}
+render();
+
+// スマホではXアプリを直接開く（アプリ内ブラウザで毎回ログインを求められないように）。
+// アプリが開かなかったときだけ、1.5秒後にブラウザ版Xを開く。
+function shareX(text){
+  const web = 'https://x.com/intent/post?text=' + encodeURIComponent(text);
+  if (!/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) { window.open(web, '_blank', 'noopener'); return; }
+  const fallback = setTimeout(() => { if (!document.hidden) location.href = web; }, 1500);
+  document.addEventListener('visibilitychange', () => { if (document.hidden) clearTimeout(fallback); }, { once: true });
+  location.href = 'twitter://post?message=' + encodeURIComponent(text);
+}
+
+document.getElementById('list').addEventListener('click', e => {
+  const s = e.target.closest('button[data-signed]');
+  if (s) { toast(toggleSigned(s.dataset.signed) ? '✅ 署名済みにしました。ありがとう！' : '署名済みを取り消しました'); render(); return; }
+  const b = e.target.closest('button.x'); if (!b) return;
+  shareX(D.items.find(x => x.id === b.dataset.id).share);
+});
+</script>
+</body>
+</html>
