@@ -94,7 +94,7 @@ footer{font-size:.78rem;color:var(--sub);margin-top:20px}
 
 <section>
   <h2>📋 基本情報</h2>
-  <dl><dt>発起人</dt><dd>ヤマシタ</dd><dt>提出先</dt><dd>環境省、各自治体、議員様、内閣総理大臣</dd><dt>終了日</dt><dd>2026-09-30</dd><dt>署名サイト</dt><dd>Voice</dd></dl>
+  <dl><dt>発起人</dt><dd>ヤマシタ</dd><dt>提出先</dt><dd>環境省、各自治体、議員様、内閣総理大臣</dd><dt>終了日</dt><dd>2026年9月30日</dd><dt>署名サイト</dt><dd>Voice</dd></dl>
 </section>
 
 <section>
@@ -125,7 +125,7 @@ if (end) {
   left.textContent = dl < 0 ? '終了' : dl === 0 ? '本日終了' : `あと${dl}日`;
   if (dl <= 14) left.classList.add('urgent');
 }
-document.getElementById('share').onclick = () => shareX("✍️【署名募集中】（9/30まで）\n\n「クマの穴狩り猟、春熊駆除および同等の 猟法・駆除方法の中止と見直しを求める署名」\n\nいま1,570人が賛同しています。\nあなたも一筆を🙏\n#署名\n\nhttps://yumaki5555.github.io/shomei/p/voice-13531.html");
+document.getElementById('share').onclick = () => shareX("✍️【署名募集中】（2026/9/30まで）\n\n「クマの穴狩り猟、春熊駆除および同等の 猟法・駆除方法の中止と見直しを求める署名」\n\nいま1,570人が賛同しています。\nあなたも一筆を🙏\n#署名\n\nhttps://voice.charity/events/13531");
 
 const SIGNED_KEY = 'shomei-signed';
 function loadSigned(){ try { return JSON.parse(localStorage.getItem(SIGNED_KEY) || '{}') || {}; } catch (e) { return {}; } }

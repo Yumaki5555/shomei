@@ -94,7 +94,7 @@ footer{font-size:.78rem;color:var(--sub);margin-top:20px}
 
 <section>
   <h2>📋 基本情報</h2>
-  <dl><dt>発起人</dt><dd>水と緑のまち 牛久を守る会</dd><dt>開始日</dt><dd>2025-06-04</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
+  <dl><dt>発起人</dt><dd>水と緑のまち 牛久を守る会</dd><dt>開始日</dt><dd>2025年6月4日</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
 </section>
 
 <section>
@@ -125,7 +125,7 @@ if (end) {
   left.textContent = dl < 0 ? '終了' : dl === 0 ? '本日終了' : `あと${dl}日`;
   if (dl <= 14) left.classList.add('urgent');
 }
-document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「関東平野を、霞ヶ浦水源を守ろう！茨城県牛久市の小学生たちが泥だらけになりながら長年守り続けた湧水地をメガソーラーの森林伐…」\n\nいま29,141人が賛同しています。\nあなたも一筆を🙏\n#署名 #メガソーラー\n\nhttps://yumaki5555.github.io/shomei/p/change-490599302.html");
+document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「関東平野を、霞ヶ浦水源を守ろう！茨城県牛久市の小学生たちが泥だらけになりながら長年守り続けた湧水地をメガソーラーの森林伐…」\n\nいま29,141人が賛同しています。\nあなたも一筆を🙏\n#署名 #メガソーラー\n\nhttps://www.change.org/p/%E9%96%A2%E6%9D%B1%E5%B9%B3%E9%87%8E%E3%82%92-%E9%9C%9E%E3%83%B6%E6%B5%A6%E6%B0%B4%E6%BA%90%E3%82%92%E5%AE%88%E3%82%8D%E3%81%86-%E8%8C%A8%E5%9F%8E%E7%9C%8C%E7%89%9B%E4%B9%85%E5%B8%82%E3%81%AE%E5%B0%8F%E5%AD%A6%E7%94%9F%E3%81%9F%E3%81%A1%E3%81%8C%E6%B3%A5%E3%81%A0%E3%82%89%E3%81%91%E3%81%AB%E3%81%AA%E3%82%8A%E3%81%AA%E3%81%8C%E3%82%89%E9%95%B7%E5%B9%B4%E5%AE%88%E3%82%8A%E7%B6%9A%E3%81%91%E3%81%9F%E6%B9%A7%E6%B0%B4%E5%9C%B0%E3%82%92%E3%83%A1%E3%82%AC%E3%82%BD%E3%83%BC%E3%83%A9%E3%83%BC%E3%81%AE%E6%A3%AE%E6%9E%97%E4%BC%90%E6%8E%A1%E3%81%8B%E3%82%89%E5%AE%88%E3%82%8A%E3%81%9F%E3%81%84");
 
 const SIGNED_KEY = 'shomei-signed';
 function loadSigned(){ try { return JSON.parse(localStorage.getItem(SIGNED_KEY) || '{}') || {}; } catch (e) { return {}; } }

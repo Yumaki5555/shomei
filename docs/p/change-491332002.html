@@ -94,7 +94,7 @@ footer{font-size:.78rem;color:var(--sub);margin-top:20px}
 
 <section>
   <h2>📋 基本情報</h2>
-  <dl><dt>発起人</dt><dd>豪文 中村</dd><dt>開始日</dt><dd>2026-06-07</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
+  <dl><dt>発起人</dt><dd>豪文 中村</dd><dt>開始日</dt><dd>2026年6月7日</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
 </section>
 
 <section>
@@ -125,7 +125,7 @@ if (end) {
   left.textContent = dl < 0 ? '終了' : dl === 0 ? '本日終了' : `あと${dl}日`;
   if (dl <= 14) left.classList.add('urgent');
 }
-document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「福知山市は脱炭素先行地域の選定を取り下げよ」\n\nいま3,173人が賛同しています。\nあなたも一筆を🙏\n#署名\n\nhttps://yumaki5555.github.io/shomei/p/change-491332002.html");
+document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「福知山市は脱炭素先行地域の選定を取り下げよ」\n\nいま3,173人が賛同しています。\nあなたも一筆を🙏\n#署名\n\nhttps://www.change.org/p/%E7%A6%8F%E7%9F%A5%E5%B1%B1%E5%B8%82%E3%81%AF%E8%84%B1%E7%82%AD%E7%B4%A0%E5%85%88%E8%A1%8C%E5%9C%B0%E5%9F%9F%E3%81%AE%E9%81%B8%E5%AE%9A%E3%82%92%E5%8F%96%E3%82%8A%E4%B8%8B%E3%81%92%E3%82%88");
 
 const SIGNED_KEY = 'shomei-signed';
 function loadSigned(){ try { return JSON.parse(localStorage.getItem(SIGNED_KEY) || '{}') || {}; } catch (e) { return {}; } }

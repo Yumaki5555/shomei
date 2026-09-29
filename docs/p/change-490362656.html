@@ -94,7 +94,7 @@ footer{font-size:.78rem;color:var(--sub);margin-top:20px}
 
 <section>
   <h2>📋 基本情報</h2>
-  <dl><dt>発起人</dt><dd>宮ノ森 光輝</dd><dt>開始日</dt><dd>2025-01-05</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
+  <dl><dt>発起人</dt><dd>宮ノ森 光輝</dd><dt>開始日</dt><dd>2025年1月5日</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
 </section>
 
 <section>
@@ -125,7 +125,7 @@ if (end) {
   left.textContent = dl < 0 ? '終了' : dl === 0 ? '本日終了' : `あと${dl}日`;
   if (dl <= 14) left.classList.add('urgent');
 }
-document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「宮城県知事の土葬墓地造成への反対を表明しましょう」\n\nいま1,971人が賛同しています。\nあなたも一筆を🙏\n#署名 #土葬\n\nhttps://yumaki5555.github.io/shomei/p/change-490362656.html");
+document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「宮城県知事の土葬墓地造成への反対を表明しましょう」\n\nいま1,971人が賛同しています。\nあなたも一筆を🙏\n#署名 #土葬\n\nhttps://www.change.org/p/%E5%AE%AE%E5%9F%8E%E7%9C%8C%E7%9F%A5%E4%BA%8B%E3%81%AE%E5%9C%9F%E8%91%AC%E5%A2%93%E5%9C%B0%E9%80%A0%E6%88%90%E3%81%B8%E3%81%AE%E5%8F%8D%E5%AF%BE%E3%82%92%E8%A1%A8%E6%98%8E%E3%81%97%E3%81%BE%E3%81%97%E3%82%87%E3%81%86");
 
 const SIGNED_KEY = 'shomei-signed';
 function loadSigned(){ try { return JSON.parse(localStorage.getItem(SIGNED_KEY) || '{}') || {}; } catch (e) { return {}; } }

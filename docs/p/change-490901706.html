@@ -94,7 +94,7 @@ footer{font-size:.78rem;color:var(--sub);margin-top:20px}
 
 <section>
   <h2>📋 基本情報</h2>
-  <dl><dt>発起人</dt><dd>神戸 郁夫</dd><dt>開始日</dt><dd>2025-11-26</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
+  <dl><dt>発起人</dt><dd>神戸 郁夫</dd><dt>開始日</dt><dd>2025年11月26日</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
 </section>
 
 <section>
@@ -125,7 +125,7 @@ if (end) {
   left.textContent = dl < 0 ? '終了' : dl === 0 ? '本日終了' : `あと${dl}日`;
   if (dl <= 14) left.classList.add('urgent');
 }
-document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「NHKは受信料の支払いを強制するのをやめてください」\n\nいま102,499人が賛同しています。\nあなたも一筆を🙏\n#署名\n\nhttps://yumaki5555.github.io/shomei/p/change-490901706.html");
+document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「NHKは受信料の支払いを強制するのをやめてください」\n\nいま102,499人が賛同しています。\nあなたも一筆を🙏\n#署名\n\nhttps://www.change.org/p/nhk%E3%81%AF%E5%8F%97%E4%BF%A1%E6%96%99%E3%81%AE%E6%94%AF%E6%89%95%E3%81%84%E3%82%92%E5%BC%B7%E5%88%B6%E3%81%99%E3%82%8B%E3%81%AE%E3%82%92%E3%82%84%E3%82%81%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84");
 
 const SIGNED_KEY = 'shomei-signed';
 function loadSigned(){ try { return JSON.parse(localStorage.getItem(SIGNED_KEY) || '{}') || {}; } catch (e) { return {}; } }

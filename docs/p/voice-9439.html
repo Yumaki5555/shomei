@@ -94,7 +94,7 @@ footer{font-size:.78rem;color:var(--sub);margin-top:20px}
 
 <section>
   <h2>📋 基本情報</h2>
-  <dl><dt>発起人</dt><dd>穂積茂行</dd><dt>提出先</dt><dd>各地方自治体、政府</dd><dt>終了日</dt><dd>2026-10-31</dd><dt>署名サイト</dt><dd>Voice</dd></dl>
+  <dl><dt>発起人</dt><dd>穂積茂行</dd><dt>提出先</dt><dd>各地方自治体、政府</dd><dt>終了日</dt><dd>2026年10月31日</dd><dt>署名サイト</dt><dd>Voice</dd></dl>
 </section>
 
 <section>
@@ -125,7 +125,7 @@ if (end) {
   left.textContent = dl < 0 ? '終了' : dl === 0 ? '本日終了' : `あと${dl}日`;
   if (dl <= 14) left.classList.add('urgent');
 }
-document.getElementById('share').onclick = () => shareX("⭐【おすすめ署名】（10/31まで）\n\n「土葬墓地は日本にいらない」\n\nいま18,286人が賛同しています。\nあなたも一筆を🙏\n#署名 #土葬\n\nhttps://yumaki5555.github.io/shomei/p/voice-9439.html");
+document.getElementById('share').onclick = () => shareX("⭐【おすすめ署名】（2026/10/31まで）\n\n「土葬墓地は日本にいらない」\n\nいま18,286人が賛同しています。\nあなたも一筆を🙏\n#署名 #土葬\n\nhttps://voice.charity/events/9439");
 
 const SIGNED_KEY = 'shomei-signed';
 function loadSigned(){ try { return JSON.parse(localStorage.getItem(SIGNED_KEY) || '{}') || {}; } catch (e) { return {}; } }

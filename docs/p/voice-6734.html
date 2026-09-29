@@ -94,7 +94,7 @@ footer{font-size:.78rem;color:var(--sub);margin-top:20px}
 
 <section>
   <h2>📋 基本情報</h2>
-  <dl><dt>発起人</dt><dd>向江安和</dd><dt>提出先</dt><dd>東京都知事宛</dd><dt>終了日</dt><dd>2026-12-30</dd><dt>署名サイト</dt><dd>Voice</dd></dl>
+  <dl><dt>発起人</dt><dd>向江安和</dd><dt>提出先</dt><dd>東京都知事宛</dd><dt>終了日</dt><dd>2026年12月30日</dd><dt>署名サイト</dt><dd>Voice</dd></dl>
 </section>
 
 <section>
@@ -125,7 +125,7 @@ if (end) {
   left.textContent = dl < 0 ? '終了' : dl === 0 ? '本日終了' : `あと${dl}日`;
   if (dl <= 14) left.classList.add('urgent');
 }
-document.getElementById('share').onclick = () => shareX("✍️【署名募集中】（12/30まで）\n\n「「東京都が締結したエジプト人労働者研修協定の白紙撤回と、東京都知事の退陣を求める請願書」」\n\nいま4,070人が賛同しています。\nあなたも一筆を🙏\n#署名 #移民政策 #リコール\n\nhttps://yumaki5555.github.io/shomei/p/voice-6734.html");
+document.getElementById('share').onclick = () => shareX("✍️【署名募集中】（2026/12/30まで）\n\n「「東京都が締結したエジプト人労働者研修協定の白紙撤回と、東京都知事の退陣を求める請願書」」\n\nいま4,070人が賛同しています。\nあなたも一筆を🙏\n#署名 #移民政策 #リコール\n\nhttps://voice.charity/events/6734");
 
 const SIGNED_KEY = 'shomei-signed';
 function loadSigned(){ try { return JSON.parse(localStorage.getItem(SIGNED_KEY) || '{}') || {}; } catch (e) { return {}; } }

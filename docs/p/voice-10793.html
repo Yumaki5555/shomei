@@ -94,7 +94,7 @@ footer{font-size:.78rem;color:var(--sub);margin-top:20px}
 
 <section>
   <h2>📋 基本情報</h2>
-  <dl><dt>発起人</dt><dd>石鏡の海を守る会</dd><dt>提出先</dt><dd>高市総理大臣　経済産業省　環境省　鈴木農林水産大臣　小野田経済安全保障担当大臣　三重県知事　　鳥羽市長</dd><dt>終了日</dt><dd>2026-12-31</dd><dt>署名サイト</dt><dd>Voice</dd></dl>
+  <dl><dt>発起人</dt><dd>石鏡の海を守る会</dd><dt>提出先</dt><dd>高市総理大臣　経済産業省　環境省　鈴木農林水産大臣　小野田経済安全保障担当大臣　三重県知事　　鳥羽市長</dd><dt>終了日</dt><dd>2026年12月31日</dd><dt>署名サイト</dt><dd>Voice</dd></dl>
 </section>
 
 <section>
@@ -125,7 +125,7 @@ if (end) {
   left.textContent = dl < 0 ? '終了' : dl === 0 ? '本日終了' : `あと${dl}日`;
   if (dl <= 14) left.classList.add('urgent');
 }
-document.getElementById('share').onclick = () => shareX("✍️【署名募集中】（12/31まで）\n\n「伊勢志摩国立公園・鳥羽の海を未来へ つなぐため洋上風力発電計画の 白紙撤回を求めます。 ご協力をお願いいたし…」\n\nいま778人が賛同しています。\nあなたも一筆を🙏\n#署名 #メガソーラー\n\nhttps://yumaki5555.github.io/shomei/p/voice-10793.html");
+document.getElementById('share').onclick = () => shareX("✍️【署名募集中】（2026/12/31まで）\n\n「伊勢志摩国立公園・鳥羽の海を未来へ つなぐため洋上風力発電計画の 白紙撤回を求めます。 ご協力をお…」\n\nいま778人が賛同しています。\nあなたも一筆を🙏\n#署名 #メガソーラー\n\nhttps://voice.charity/events/10793");
 
 const SIGNED_KEY = 'shomei-signed';
 function loadSigned(){ try { return JSON.parse(localStorage.getItem(SIGNED_KEY) || '{}') || {}; } catch (e) { return {}; } }

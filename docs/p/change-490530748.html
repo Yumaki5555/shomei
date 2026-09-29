@@ -94,7 +94,7 @@ footer{font-size:.78rem;color:var(--sub);margin-top:20px}
 
 <section>
   <h2>📋 基本情報</h2>
-  <dl><dt>発起人</dt><dd>被害者 性犯罪</dd><dt>開始日</dt><dd>2025-04-17</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
+  <dl><dt>発起人</dt><dd>被害者 性犯罪</dd><dt>開始日</dt><dd>2025年4月17日</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
 </section>
 
 <section>
@@ -125,7 +125,7 @@ if (end) {
   left.textContent = dl < 0 ? '終了' : dl === 0 ? '本日終了' : `あと${dl}日`;
   if (dl <= 14) left.classList.add('urgent');
 }
-document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「宮城県に対する性犯罪被害届の即時受理の要求」\n\nいま109人が賛同しています。\nあなたも一筆を🙏\n#署名\n\nhttps://yumaki5555.github.io/shomei/p/change-490530748.html");
+document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「宮城県に対する性犯罪被害届の即時受理の要求」\n\nいま109人が賛同しています。\nあなたも一筆を🙏\n#署名\n\nhttps://www.change.org/p/%E5%AE%AE%E5%9F%8E%E7%9C%8C%E3%81%AB%E5%AF%BE%E3%81%99%E3%82%8B%E6%80%A7%E7%8A%AF%E7%BD%AA%E8%A2%AB%E5%AE%B3%E5%B1%8A%E3%81%AE%E5%8D%B3%E6%99%82%E5%8F%97%E7%90%86%E3%81%AE%E8%A6%81%E6%B1%82");
 
 const SIGNED_KEY = 'shomei-signed';
 function loadSigned(){ try { return JSON.parse(localStorage.getItem(SIGNED_KEY) || '{}') || {}; } catch (e) { return {}; } }

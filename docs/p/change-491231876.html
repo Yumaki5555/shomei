@@ -94,7 +94,7 @@ footer{font-size:.78rem;color:var(--sub);margin-top:20px}
 
 <section>
   <h2>📋 基本情報</h2>
-  <dl><dt>発起人</dt><dd>管 文雄</dd><dt>開始日</dt><dd>2026-05-10</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
+  <dl><dt>発起人</dt><dd>管 文雄</dd><dt>開始日</dt><dd>2026年5月10日</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
 </section>
 
 <section>
@@ -125,7 +125,7 @@ if (end) {
   left.textContent = dl < 0 ? '終了' : dl === 0 ? '本日終了' : `あと${dl}日`;
   if (dl <= 14) left.classList.add('urgent');
 }
-document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「福島県会津若松の背炙山の風力発電建設の中止を求めます。」\n\nいま53人が賛同しています。\nあなたも一筆を🙏\n#署名 #メガソーラー\n\nhttps://yumaki5555.github.io/shomei/p/change-491231876.html");
+document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「福島県会津若松の背炙山の風力発電建設の中止を求めます。」\n\nいま53人が賛同しています。\nあなたも一筆を🙏\n#署名 #メガソーラー\n\nhttps://www.change.org/p/%E7%A6%8F%E5%B3%B6%E7%9C%8C%E4%BC%9A%E6%B4%A5%E8%8B%A5%E6%9D%BE%E3%81%AE%E8%83%8C%E7%82%99%E5%B1%B1%E3%81%AE%E9%A2%A8%E5%8A%9B%E7%99%BA%E9%9B%BB%E5%BB%BA%E8%A8%AD%E3%81%AE%E4%B8%AD%E6%AD%A2%E3%82%92%E6%B1%82%E3%82%81%E3%81%BE%E3%81%99");
 
 const SIGNED_KEY = 'shomei-signed';
 function loadSigned(){ try { return JSON.parse(localStorage.getItem(SIGNED_KEY) || '{}') || {}; } catch (e) { return {}; } }

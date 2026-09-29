@@ -94,7 +94,7 @@ footer{font-size:.78rem;color:var(--sub);margin-top:20px}
 
 <section>
   <h2>📋 基本情報</h2>
-  <dl><dt>発起人</dt><dd>そら</dd><dt>提出先</dt><dd>北海道知事 高市早苗総理大臣 石原宏高環境大臣</dd><dt>終了日</dt><dd>2026-12-31</dd><dt>署名サイト</dt><dd>Voice</dd></dl>
+  <dl><dt>発起人</dt><dd>そら</dd><dt>提出先</dt><dd>北海道知事 高市早苗総理大臣 石原宏高環境大臣</dd><dt>終了日</dt><dd>2026年12月31日</dd><dt>署名サイト</dt><dd>Voice</dd></dl>
 </section>
 
 <section>
@@ -125,7 +125,7 @@ if (end) {
   left.textContent = dl < 0 ? '終了' : dl === 0 ? '本日終了' : `あと${dl}日`;
   if (dl <= 14) left.classList.add('urgent');
 }
-document.getElementById('share').onclick = () => shareX("✍️【署名募集中】（12/31まで）\n\n「支笏洞爺国立公園周辺の白老町へのメガソーラー計画に反対します」\n\nいま303人が賛同しています。\nあなたも一筆を🙏\n#署名 #メガソーラー\n\nhttps://yumaki5555.github.io/shomei/p/voice-8284.html");
+document.getElementById('share').onclick = () => shareX("✍️【署名募集中】（2026/12/31まで）\n\n「支笏洞爺国立公園周辺の白老町へのメガソーラー計画に反対します」\n\nいま303人が賛同しています。\nあなたも一筆を🙏\n#署名 #メガソーラー\n\nhttps://voice.charity/events/8284");
 
 const SIGNED_KEY = 'shomei-signed';
 function loadSigned(){ try { return JSON.parse(localStorage.getItem(SIGNED_KEY) || '{}') || {}; } catch (e) { return {}; } }

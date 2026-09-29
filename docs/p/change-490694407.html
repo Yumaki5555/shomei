@@ -94,7 +94,7 @@ footer{font-size:.78rem;color:var(--sub);margin-top:20px}
 
 <section>
   <h2>📋 基本情報</h2>
-  <dl><dt>発起人</dt><dd>大花 慶子</dd><dt>開始日</dt><dd>2025-08-11</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
+  <dl><dt>発起人</dt><dd>大花 慶子</dd><dt>開始日</dt><dd>2025年8月11日</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
 </section>
 
 <section>
@@ -125,7 +125,7 @@ if (end) {
   left.textContent = dl < 0 ? '終了' : dl === 0 ? '本日終了' : `あと${dl}日`;
   if (dl <= 14) left.classList.add('urgent');
 }
-document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「西郷村のTOKIO-BA跡地をメガソーラーから守ろう！（TOKIO-BA跡地を守る会）」\n\nいま15,828人が賛同しています。\nあなたも一筆を🙏\n#署名 #メガソーラー\n\nhttps://yumaki5555.github.io/shomei/p/change-490694407.html");
+document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「西郷村のTOKIO-BA跡地をメガソーラーから守ろう！（TOKIO-BA跡地を守る会）」\n\nいま15,828人が賛同しています。\nあなたも一筆を🙏\n#署名 #メガソーラー\n\nhttps://www.change.org/p/%E8%A5%BF%E9%83%B7%E6%9D%91%E3%81%AEtokio-ba%E8%B7%A1%E5%9C%B0%E3%82%92%E3%83%A1%E3%82%AC%E3%82%BD%E3%83%BC%E3%83%A9%E3%83%BC%E3%81%8B%E3%82%89%E5%AE%88%E3%82%8D%E3%81%86-tokio-ba%E8%B7%A1%E5%9C%B0%E3%82%92%E5%AE%88%E3%82%8B%E4%BC%9A");
 
 const SIGNED_KEY = 'shomei-signed';
 function loadSigned(){ try { return JSON.parse(localStorage.getItem(SIGNED_KEY) || '{}') || {}; } catch (e) { return {}; } }

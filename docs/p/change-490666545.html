@@ -94,7 +94,7 @@ footer{font-size:.78rem;color:var(--sub);margin-top:20px}
 
 <section>
   <h2>📋 基本情報</h2>
-  <dl><dt>発起人</dt><dd>MIKI TSUTOMU</dd><dt>開始日</dt><dd>2025-07-23</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
+  <dl><dt>発起人</dt><dd>MIKI TSUTOMU</dd><dt>開始日</dt><dd>2025年7月23日</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
 </section>
 
 <section>
@@ -125,7 +125,7 @@ if (end) {
   left.textContent = dl < 0 ? '終了' : dl === 0 ? '本日終了' : `あと${dl}日`;
   if (dl <= 14) left.classList.add('urgent');
 }
-document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「上賀茂・大田神社のかきつばたの沢を守ってください」\n\nいま11,763人が賛同しています。\nあなたも一筆を🙏\n#署名 #民泊\n\nhttps://yumaki5555.github.io/shomei/p/change-490666545.html");
+document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「上賀茂・大田神社のかきつばたの沢を守ってください」\n\nいま11,763人が賛同しています。\nあなたも一筆を🙏\n#署名 #民泊\n\nhttps://www.change.org/p/%E4%B8%8A%E8%B3%80%E8%8C%82-%E5%A4%A7%E7%94%B0%E7%A5%9E%E7%A4%BE%E3%81%AE%E3%81%8B%E3%81%8D%E3%81%A4%E3%81%B0%E3%81%9F%E3%81%AE%E6%B2%A2%E3%82%92%E5%AE%88%E3%81%A3%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84");
 
 const SIGNED_KEY = 'shomei-signed';
 function loadSigned(){ try { return JSON.parse(localStorage.getItem(SIGNED_KEY) || '{}') || {}; } catch (e) { return {}; } }

@@ -94,7 +94,7 @@ footer{font-size:.78rem;color:var(--sub);margin-top:20px}
 
 <section>
   <h2>📋 基本情報</h2>
-  <dl><dt>発起人</dt><dd>小野澤 俊</dd><dt>開始日</dt><dd>2026-09-21</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
+  <dl><dt>発起人</dt><dd>小野澤 俊</dd><dt>開始日</dt><dd>2026年9月21日</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
 </section>
 
 <section>
@@ -125,7 +125,7 @@ if (end) {
   left.textContent = dl < 0 ? '終了' : dl === 0 ? '本日終了' : `あと${dl}日`;
   if (dl <= 14) left.classList.add('urgent');
 }
-document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「岡本さゆり市議の議員辞職またはリコールを求めます」\n\nいま65人が賛同しています。\nあなたも一筆を🙏\n#署名 #リコール\n\nhttps://yumaki5555.github.io/shomei/p/change-491531647.html");
+document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「岡本さゆり市議の議員辞職またはリコールを求めます」\n\nいま65人が賛同しています。\nあなたも一筆を🙏\n#署名 #リコール\n\nhttps://www.change.org/p/%E5%B2%A1%E6%9C%AC%E3%81%95%E3%82%86%E3%82%8A%E5%B8%82%E8%AD%B0%E3%81%AE%E8%AD%B0%E5%93%A1%E8%BE%9E%E8%81%B7%E3%81%BE%E3%81%9F%E3%81%AF%E3%83%AA%E3%82%B3%E3%83%BC%E3%83%AB%E3%82%92%E6%B1%82%E3%82%81%E3%81%BE%E3%81%99");
 
 const SIGNED_KEY = 'shomei-signed';
 function loadSigned(){ try { return JSON.parse(localStorage.getItem(SIGNED_KEY) || '{}') || {}; } catch (e) { return {}; } }

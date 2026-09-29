@@ -94,7 +94,7 @@ footer{font-size:.78rem;color:var(--sub);margin-top:20px}
 
 <section>
   <h2>📋 基本情報</h2>
-  <dl><dt>発起人</dt><dd>藤木茂</dd><dt>提出先</dt><dd>奈良県など（変更の可能性あり）</dd><dt>終了日</dt><dd>2026-12-31</dd><dt>署名サイト</dt><dd>Voice</dd></dl>
+  <dl><dt>発起人</dt><dd>藤木茂</dd><dt>提出先</dt><dd>奈良県など（変更の可能性あり）</dd><dt>終了日</dt><dd>2026年12月31日</dd><dt>署名サイト</dt><dd>Voice</dd></dl>
 </section>
 
 <section>
@@ -125,7 +125,7 @@ if (end) {
   left.textContent = dl < 0 ? '終了' : dl === 0 ? '本日終了' : `あと${dl}日`;
   if (dl <= 14) left.classList.add('urgent');
 }
-document.getElementById('share').onclick = () => shareX("✍️【署名募集中】（12/31まで）\n\n「外国人雇用に関する補助金の廃止を求めます」\n\nいま6,079人が賛同しています。\nあなたも一筆を🙏\n#署名 #移民政策\n\nhttps://yumaki5555.github.io/shomei/p/voice-12574.html");
+document.getElementById('share').onclick = () => shareX("✍️【署名募集中】（2026/12/31まで）\n\n「外国人雇用に関する補助金の廃止を求めます」\n\nいま6,079人が賛同しています。\nあなたも一筆を🙏\n#署名 #移民政策\n\nhttps://voice.charity/events/12574");
 
 const SIGNED_KEY = 'shomei-signed';
 function loadSigned(){ try { return JSON.parse(localStorage.getItem(SIGNED_KEY) || '{}') || {}; } catch (e) { return {}; } }

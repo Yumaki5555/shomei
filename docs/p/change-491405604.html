@@ -94,7 +94,7 @@ footer{font-size:.78rem;color:var(--sub);margin-top:20px}
 
 <section>
   <h2>📋 基本情報</h2>
-  <dl><dt>発起人</dt><dd>代表理事　飯島　博 NPO法人アサザ基金</dd><dt>開始日</dt><dd>2026-07-16</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
+  <dl><dt>発起人</dt><dd>代表理事　飯島　博 NPO法人アサザ基金</dd><dt>開始日</dt><dd>2026年7月16日</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
 </section>
 
 <section>
@@ -125,7 +125,7 @@ if (end) {
   left.textContent = dl < 0 ? '終了' : dl === 0 ? '本日終了' : `あと${dl}日`;
   if (dl <= 14) left.classList.add('urgent');
 }
-document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「中学生や若者たちが蘇らせた里山を潰す太陽光発電事業の白紙撤回を」\n\nいま828人が賛同しています。\nあなたも一筆を🙏\n#署名 #メガソーラー\n\nhttps://yumaki5555.github.io/shomei/p/change-491405604.html");
+document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「中学生や若者たちが蘇らせた里山を潰す太陽光発電事業の白紙撤回を」\n\nいま828人が賛同しています。\nあなたも一筆を🙏\n#署名 #メガソーラー\n\nhttps://www.change.org/p/%E4%B8%AD%E5%AD%A6%E7%94%9F%E3%82%84%E8%8B%A5%E8%80%85%E3%81%9F%E3%81%A1%E3%81%8C%E8%98%87%E3%82%89%E3%81%9B%E3%81%9F%E9%87%8C%E5%B1%B1%E3%82%92%E6%BD%B0%E3%81%99%E5%A4%AA%E9%99%BD%E5%85%89%E7%99%BA%E9%9B%BB%E4%BA%8B%E6%A5%AD%E3%81%AE%E7%99%BD%E7%B4%99%E6%92%A4%E5%9B%9E%E3%82%92");
 
 const SIGNED_KEY = 'shomei-signed';
 function loadSigned(){ try { return JSON.parse(localStorage.getItem(SIGNED_KEY) || '{}') || {}; } catch (e) { return {}; } }

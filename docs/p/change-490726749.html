@@ -94,7 +94,7 @@ footer{font-size:.78rem;color:var(--sub);margin-top:20px}
 
 <section>
   <h2>📋 基本情報</h2>
-  <dl><dt>発起人</dt><dd>チビ ココ</dd><dt>開始日</dt><dd>2025-08-24</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
+  <dl><dt>発起人</dt><dd>チビ ココ</dd><dt>開始日</dt><dd>2025年8月24日</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
 </section>
 
 <section>
@@ -125,7 +125,7 @@ if (end) {
   left.textContent = dl < 0 ? '終了' : dl === 0 ? '本日終了' : `あと${dl}日`;
   if (dl <= 14) left.classList.add('urgent');
 }
-document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「伊勢志摩国立公園のメガソーラー計画を中止せよ」\n\nいま13,709人が賛同しています。\nあなたも一筆を🙏\n#署名 #メガソーラー\n\nhttps://yumaki5555.github.io/shomei/p/change-490726749.html");
+document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「伊勢志摩国立公園のメガソーラー計画を中止せよ」\n\nいま13,709人が賛同しています。\nあなたも一筆を🙏\n#署名 #メガソーラー\n\nhttps://www.change.org/p/%E4%BC%8A%E5%8B%A2%E5%BF%97%E6%91%A9%E5%9B%BD%E7%AB%8B%E5%85%AC%E5%9C%92%E3%81%AE%E3%83%A1%E3%82%AC%E3%82%BD%E3%83%BC%E3%83%A9%E3%83%BC%E8%A8%88%E7%94%BB%E3%82%92%E4%B8%AD%E6%AD%A2%E3%81%9B%E3%82%88");
 
 const SIGNED_KEY = 'shomei-signed';
 function loadSigned(){ try { return JSON.parse(localStorage.getItem(SIGNED_KEY) || '{}') || {}; } catch (e) { return {}; } }

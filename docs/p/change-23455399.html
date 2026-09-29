@@ -94,7 +94,7 @@ footer{font-size:.78rem;color:var(--sub);margin-top:20px}
 
 <section>
   <h2>📋 基本情報</h2>
-  <dl><dt>発起人</dt><dd>霧島のいのちと自然文化を守る会 Kojo Ryusei</dd><dt>提出先</dt><dd>鹿児島県</dd><dt>開始日</dt><dd>2020-07-14</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
+  <dl><dt>発起人</dt><dd>霧島のいのちと自然文化を守る会 Kojo Ryusei</dd><dt>提出先</dt><dd>鹿児島県</dd><dt>開始日</dt><dd>2020年7月14日</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
 </section>
 
 <section>
@@ -125,7 +125,7 @@ if (end) {
   left.textContent = dl < 0 ? '終了' : dl === 0 ? '本日終了' : `あと${dl}日`;
   if (dl <= 14) left.classList.add('urgent');
 }
-document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「自然を壊し得るもの、失われるものとは？今すぐ賛同！でメガソーラー反対署名活動。地球に生きる全ての人たちへ。」\n\nいま1,797人が賛同しています。\nあなたも一筆を🙏\n#署名 #メガソーラー\n\nhttps://yumaki5555.github.io/shomei/p/change-23455399.html");
+document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「自然を壊し得るもの、失われるものとは？今すぐ賛同！でメガソーラー反対署名活動。地球に生きる全ての人たちへ。」\n\nいま1,797人が賛同しています。\nあなたも一筆を🙏\n#署名 #メガソーラー\n\nhttps://www.change.org/p/%E9%9C%A7%E5%B3%B6%E3%81%AE%E3%81%84%E3%81%AE%E3%81%A1%E3%81%A8%E8%87%AA%E7%84%B6%E6%96%87%E5%8C%96%E3%82%92%E5%AE%88%E3%82%8B%E4%BC%9A-%E8%87%AA%E7%84%B6%E3%82%92%E5%A3%8A%E3%81%97%E5%BE%97%E3%82%8B%E3%82%82%E3%81%AE-%E5%A4%B1%E3%82%8F%E3%82%8C%E3%82%8B%E3%82%82%E3%81%AE%E3%81%A8%E3%81%AF-%E4%BB%8A%E3%81%99%E3%81%90%E8%B3%9B%E5%90%8C-%E3%81%A7%E7%BD%B2%E5%90%8D%E6%B4%BB%E5%8B%95-%E5%9C%B0%E7%90%83%E3%81%AB%E7%94%9F%E3%81%8D%E3%82%8B%E5%85%A8%E3%81%A6%E3%81%AE%E4%BA%BA%E9%81%94%E3%81%B8");
 
 const SIGNED_KEY = 'shomei-signed';
 function loadSigned(){ try { return JSON.parse(localStorage.getItem(SIGNED_KEY) || '{}') || {}; } catch (e) { return {}; } }

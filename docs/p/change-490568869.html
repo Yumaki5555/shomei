@@ -94,7 +94,7 @@ footer{font-size:.78rem;color:var(--sub);margin-top:20px}
 
 <section>
   <h2>📋 基本情報</h2>
-  <dl><dt>発起人</dt><dd>此花区春日出南特区民泊 反対有志の会</dd><dt>開始日</dt><dd>2025-05-15</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
+  <dl><dt>発起人</dt><dd>此花区春日出南特区民泊 反対有志の会</dd><dt>開始日</dt><dd>2025年5月15日</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
 </section>
 
 <section>
@@ -125,7 +125,7 @@ if (end) {
   left.textContent = dl < 0 ? '終了' : dl === 0 ? '本日終了' : `あと${dl}日`;
   if (dl <= 14) left.classList.add('urgent');
 }
-document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「「巨大特区民泊はいらない！」大阪市此花区春日出南から特区民泊運営撤退と制度の見直しを求めます」\n\nいま32,408人が賛同しています。\nあなたも一筆を🙏\n#署名 #民泊\n\nhttps://yumaki5555.github.io/shomei/p/change-490568869.html");
+document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「「巨大特区民泊はいらない！」大阪市此花区春日出南から特区民泊運営撤退と制度の見直しを求めます」\n\nいま32,408人が賛同しています。\nあなたも一筆を🙏\n#署名 #民泊\n\nhttps://www.change.org/p/%E5%B7%A8%E5%A4%A7%E7%89%B9%E5%8C%BA%E6%B0%91%E6%B3%8A%E3%81%AF%E3%81%84%E3%82%89%E3%81%AA%E3%81%84-%E5%A4%A7%E9%98%AA%E5%B8%82%E6%AD%A4%E8%8A%B1%E5%8C%BA%E6%98%A5%E6%97%A5%E5%87%BA%E5%8D%97%E3%81%8B%E3%82%89%E7%89%B9%E5%8C%BA%E6%B0%91%E6%B3%8A%E9%81%8B%E5%96%B6%E6%92%A4%E9%80%80%E3%81%A8%E5%88%B6%E5%BA%A6%E3%81%AE%E8%A6%8B%E7%9B%B4%E3%81%97%E3%82%92%E6%B1%82%E3%82%81%E3%81%BE%E3%81%99");
 
 const SIGNED_KEY = 'shomei-signed';
 function loadSigned(){ try { return JSON.parse(localStorage.getItem(SIGNED_KEY) || '{}') || {}; } catch (e) { return {}; } }

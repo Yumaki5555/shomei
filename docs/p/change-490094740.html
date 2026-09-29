@@ -94,7 +94,7 @@ footer{font-size:.78rem;color:var(--sub);margin-top:20px}
 
 <section>
   <h2>📋 基本情報</h2>
-  <dl><dt>発起人</dt><dd>敏治 松本</dd><dt>開始日</dt><dd>2024-06-09</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
+  <dl><dt>発起人</dt><dd>敏治 松本</dd><dt>開始日</dt><dd>2024年6月9日</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
 </section>
 
 <section>
@@ -125,7 +125,7 @@ if (end) {
   left.textContent = dl < 0 ? '終了' : dl === 0 ? '本日終了' : `あと${dl}日`;
   if (dl <= 14) left.classList.add('urgent');
 }
-document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「太陽光発電所の銅線窃盗が止まらない‐「窃盗罪」の改正または重罰化を求めます」\n\nいま76人が賛同しています。\nあなたも一筆を🙏\n#署名\n\nhttps://yumaki5555.github.io/shomei/p/change-490094740.html");
+document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「太陽光発電所の銅線窃盗が止まらない‐「窃盗罪」の改正または重罰化を求めます」\n\nいま76人が賛同しています。\nあなたも一筆を🙏\n#署名\n\nhttps://www.change.org/p/%E5%A4%AA%E9%99%BD%E5%85%89%E7%99%BA%E9%9B%BB%E6%89%80%E3%81%AE%E9%8A%85%E7%B7%9A%E7%AA%83%E7%9B%97%E3%81%8C%E6%AD%A2%E3%81%BE%E3%82%89%E3%81%AA%E3%81%84-%E7%AA%83%E7%9B%97%E7%BD%AA-%E3%81%AE%E6%94%B9%E6%AD%A3%E3%81%BE%E3%81%9F%E3%81%AF%E9%87%8D%E7%BD%B0%E5%8C%96%E3%82%92%E6%B1%82%E3%82%81%E3%81%BE%E3%81%99");
 
 const SIGNED_KEY = 'shomei-signed';
 function loadSigned(){ try { return JSON.parse(localStorage.getItem(SIGNED_KEY) || '{}') || {}; } catch (e) { return {}; } }

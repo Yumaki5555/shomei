@@ -94,7 +94,7 @@ footer{font-size:.78rem;color:var(--sub);margin-top:20px}
 
 <section>
   <h2>📋 基本情報</h2>
-  <dl><dt>発起人</dt><dd>… kuma​.​Morinokoe</dd><dt>開始日</dt><dd>2025-11-11</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
+  <dl><dt>発起人</dt><dd>… kuma​.​Morinokoe</dd><dt>開始日</dt><dd>2025年11月11日</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
 </section>
 
 <section>
@@ -125,7 +125,7 @@ if (end) {
   left.textContent = dl < 0 ? '終了' : dl === 0 ? '本日終了' : `あと${dl}日`;
   if (dl <= 14) left.classList.add('urgent');
 }
-document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「【緊急SOS】クマの命を守ってください 冬眠中の駆除強化策、くくり罠の即時撤廃を Stop the Hibernatio…」\n\nいま14,652人が賛同しています。\nあなたも一筆を🙏\n#署名 #メガソーラー\n\nhttps://yumaki5555.github.io/shomei/p/change-490879367.html");
+document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「【緊急SOS】クマの命を守ってください 冬眠中の駆除強化策、くくり罠の即時撤廃を Stop the Hibernatio…」\n\nいま14,652人が賛同しています。\nあなたも一筆を🙏\n#署名 #メガソーラー\n\nhttps://www.change.org/p/%E7%B7%8A%E6%80%A5sos-%E3%82%AF%E3%83%9E%E3%81%AE%E5%91%BD%E3%82%92%E5%AE%88%E3%81%A3%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84-%E5%86%AC%E7%9C%A0%E4%B8%AD%E3%81%AE%E9%A7%86%E9%99%A4%E5%BC%B7%E5%8C%96%E7%AD%96-%E3%81%8F%E3%81%8F%E3%82%8A%E7%BD%A0%E3%81%AE%E5%8D%B3%E6%99%82%E6%92%A4%E5%BB%83%E3%82%92-stop-the-hibernation-bear-cull");
 
 const SIGNED_KEY = 'shomei-signed';
 function loadSigned(){ try { return JSON.parse(localStorage.getItem(SIGNED_KEY) || '{}') || {}; } catch (e) { return {}; } }

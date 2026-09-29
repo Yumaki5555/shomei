@@ -67,20 +67,30 @@ def md(iso):
     return f"{d.month}/{d.day}"
 
 
-def share_text(it, main_hashtag, hashtag_of, site_url):
+def ymd_jp(iso):
+    """「2026-10-05」→「2026年10月5日」。日付が無ければ空文字。"""
+    if not iso:
+        return ""
+    d = date.fromisoformat(iso)
+    return f"{d.year}年{d.month}月{d.day}日"
+
+
+def share_text(it, main_hashtag, hashtag_of):
     """1件ごとの投稿の定型文（一覧ページの「𝕏でシェア」と投稿文ページで共通）。
+    リンクは署名ページそのもの（見た人がすぐ署名できるように）。
     リンク（23字として数える）込みで140字以内にする。"""
     tags = " ".join([main_hashtag] + [hashtag_of[t] for t in it["tags"] if hashtag_of.get(t)])
     head = "⭐【おすすめ署名】" if it.get("pick") else "✍️【署名募集中】"
     n = latest_count(it)
     people = f"いま{n:,}人が賛同しています。\n" if n else ""
-    until = f"（{md(it['end'])}まで）" if it.get("end") else ""
+    end = date.fromisoformat(it["end"]) if it.get("end") else None
+    until = f"（{end.year}/{end.month}/{end.day}まで）" if end else ""
     make = lambda title: (f"{head}{until}\n\n「{title}」\n\n{people}"
                           f"あなたも一筆を🙏\n{tags}\n\n")
     title = it["title"]
     while len(make(title)) + 23 > 140 and len(title) > 8:
         title = title[:-2].rstrip("…") + "…"
-    return make(title) + site_url + summary_path(it)
+    return make(title) + it["url"]
 
 
 SHARE_JS = r"""
@@ -165,7 +175,7 @@ def main():
             "tags": it["tags"], "pref": it.get("pref", ""), "pick": bool(it.get("pick")),
             "found": it.get("found", ""), "count": latest_count(it),
             "grow": g[0] if g else None, "growFrom": g[1] if g else None, "rate": g[2] if g else 0,
-            "page": summary_path(it), "share": share_text(it, config["main_hashtag"], hashtag_of, config["site_url"]),
+            "page": summary_path(it), "share": share_text(it, config["main_hashtag"], hashtag_of),
         })
     build_summary_pages(items, tags, config, hashtag_of)
 
@@ -239,7 +249,7 @@ def build_summary_pages(items, tag_defs, config, hashtag_of):
         img_abs = img if img.startswith("http") else (site_url + img if img else "")
         img_rel = img if img.startswith("http") else ("../" + img if img else "")
         facts = [("発起人", it.get("starter")), ("提出先", it.get("target")),
-                 ("開始日", it.get("start")), ("終了日", it.get("end")),
+                 ("開始日", ymd_jp(it.get("start"))), ("終了日", ymd_jp(it.get("end"))),
                  ("目標", f"{it['goal']:,}人" if it.get("goal") else ""),
                  ("署名サイト", it["site"] if it["site"] != "Change" else "change.org")]
         facts_html = "".join(f"<dt>{e(k)}</dt><dd>{e(v)}</dd>" for k, v in facts if v)
@@ -259,7 +269,7 @@ def build_summary_pages(items, tag_defs, config, hashtag_of):
             "__URL__": e(it["url"]),
             "__SITE__": "change.org" if it["site"] == "Change" else "Voice",
             "__END_ISO__": e(it.get("end") or ""),
-            "__SHARE__": json.dumps(share_text(it, config["main_hashtag"], hashtag_of, site_url), ensure_ascii=False).replace("</", "<\\/"),
+            "__SHARE__": json.dumps(share_text(it, config["main_hashtag"], hashtag_of), ensure_ascii=False).replace("</", "<\\/"),
             "__SHARE_JS__": SHARE_JS,
             "__SIGNED_JS__": SIGNED_JS,
             "__ID__": json.dumps(it["id"]),
@@ -538,6 +548,7 @@ function toast(msg){
 function ymd(d){ return Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()); }
 function daysLeft(iso){ const [y,m,d] = iso.split('-').map(Number); return Math.round((Date.UTC(y, m-1, d) - ymd(new Date())) / 86400000); }
 function md(iso){ const [, m, d] = iso.split('-').map(Number); return `${m}/${d}`; }
+function ymdJp(iso){ const [y, m, d] = iso.split('-').map(Number); return `${y}年${m}月${d}日`; }
 function esc(s){ return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 const num = n => n == null ? '—' : n.toLocaleString();
 
@@ -607,7 +618,7 @@ function render(){
       <h2><a href="${esc(i.page)}">${esc(i.title)}</a></h2>
       ${who ? `<p class="who">${who}</p>` : ''}
       <p class="num">賛同 <b>${num(i.count)}</b> 人 ${i.grow > 0 ? `<span class="grow">（${md(i.growFrom)}から +${num(i.grow)}）</span>` : ''}</p>
-      <div class="foot"><span>${i.end ? `終了日 ${md(i.end)}` : ''}</span>
+      <div class="foot"><span>${[i.start && `開始日 ${ymdJp(i.start)}`, i.end && `終了日 ${ymdJp(i.end)}`].filter(Boolean).join('　')}</span>
         <span class="actions"><a class="btn sum" href="${esc(i.page)}">まとめ</a>
         <a class="btn go" href="${esc(i.url)}" target="_blank" rel="noopener">署名ページへ</a>
         <button type="button" class="btn x" data-id="${esc(i.id)}">𝕏でシェア</button>

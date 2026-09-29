@@ -94,7 +94,7 @@ footer{font-size:.78rem;color:var(--sub);margin-top:20px}
 
 <section>
   <h2>📋 基本情報</h2>
-  <dl><dt>発起人</dt><dd>JapanSea Save</dd><dt>開始日</dt><dd>2023-03-31</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
+  <dl><dt>発起人</dt><dd>JapanSea Save</dd><dt>開始日</dt><dd>2023年3月31日</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
 </section>
 
 <section>
@@ -125,7 +125,7 @@ if (end) {
   left.textContent = dl < 0 ? '終了' : dl === 0 ? '本日終了' : `あと${dl}日`;
   if (dl <= 14) left.classList.add('urgent');
 }
-document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「日本海の美しい海岸の風景を守ろう！ 洋上風力発電は、浮体式で22Ｋｍ沖に建設を」\n\nいま717人が賛同しています。\nあなたも一筆を🙏\n#署名 #メガソーラー\n\nhttps://yumaki5555.github.io/shomei/p/change-35868422.html");
+document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「日本海の美しい海岸の風景を守ろう！ 洋上風力発電は、浮体式で22Ｋｍ沖に建設を」\n\nいま717人が賛同しています。\nあなたも一筆を🙏\n#署名 #メガソーラー\n\nhttps://www.change.org/p/%E6%97%A5%E6%9C%AC%E6%B5%B7%E3%81%AE%E7%BE%8E%E3%81%97%E3%81%84%E6%B5%B7%E5%B2%B8%E3%82%92%E5%AE%88%E3%82%8D%E3%81%86-%E6%B4%8B%E4%B8%8A%E9%A2%A8%E5%8A%9B%E7%99%BA%E9%9B%BB%E3%81%AF-%E6%B5%AE%E4%BD%93%E5%BC%8F%E3%81%AB%E3%81%97%E3%81%A620km%E6%B2%96%E3%81%AB%E5%BB%BA%E8%A8%AD%E3%82%92");
 
 const SIGNED_KEY = 'shomei-signed';
 function loadSigned(){ try { return JSON.parse(localStorage.getItem(SIGNED_KEY) || '{}') || {}; } catch (e) { return {}; } }

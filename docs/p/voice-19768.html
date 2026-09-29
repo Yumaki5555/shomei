@@ -94,7 +94,7 @@ footer{font-size:.78rem;color:var(--sub);margin-top:20px}
 
 <section>
   <h2>📋 基本情報</h2>
-  <dl><dt>発起人</dt><dd>文京区本駒込 旬席割烹しとり 店主 倭文智郎</dd><dt>提出先</dt><dd>文京区長（文京区保健所 生活衛生課）</dd><dt>終了日</dt><dd>2026-10-04</dd><dt>署名サイト</dt><dd>Voice</dd></dl>
+  <dl><dt>発起人</dt><dd>文京区本駒込 旬席割烹しとり 店主 倭文智郎</dd><dt>提出先</dt><dd>文京区長（文京区保健所 生活衛生課）</dd><dt>終了日</dt><dd>2026年10月4日</dd><dt>署名サイト</dt><dd>Voice</dd></dl>
 </section>
 
 <section>
@@ -125,7 +125,7 @@ if (end) {
   left.textContent = dl < 0 ? '終了' : dl === 0 ? '本日終了' : `あと${dl}日`;
   if (dl <= 14) left.classList.add('urgent');
 }
-document.getElementById('share').onclick = () => shareX("✍️【署名募集中】（10/4まで）\n\n「【文京区本駒込4-20-1】条例改正前の駆け込み旅館業計画に対し、トラブルを未然に防ぐ行政指導・監視強化を求めます！」\n\nいま284人が賛同しています。\nあなたも一筆を🙏\n#署名 #民泊\n\nhttps://yumaki5555.github.io/shomei/p/voice-19768.html");
+document.getElementById('share').onclick = () => shareX("✍️【署名募集中】（2026/10/4まで）\n\n「【文京区本駒込4-20-1】条例改正前の駆け込み旅館業計画に対し、トラブルを未然に防ぐ行政指導・監視強化を求…」\n\nいま284人が賛同しています。\nあなたも一筆を🙏\n#署名 #民泊\n\nhttps://voice.charity/events/19768");
 
 const SIGNED_KEY = 'shomei-signed';
 function loadSigned(){ try { return JSON.parse(localStorage.getItem(SIGNED_KEY) || '{}') || {}; } catch (e) { return {}; } }

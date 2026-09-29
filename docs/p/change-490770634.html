@@ -94,7 +94,7 @@ footer{font-size:.78rem;color:var(--sub);margin-top:20px}
 
 <section>
   <h2>📋 基本情報</h2>
-  <dl><dt>発起人</dt><dd>�� 愛国者</dd><dt>開始日</dt><dd>2025-09-12</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
+  <dl><dt>発起人</dt><dd>�� 愛国者</dd><dt>開始日</dt><dd>2025年9月12日</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
 </section>
 
 <section>
@@ -125,7 +125,7 @@ if (end) {
   left.textContent = dl < 0 ? '終了' : dl === 0 ? '本日終了' : `あと${dl}日`;
   if (dl <= 14) left.classList.add('urgent');
 }
-document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「タイトル 浜松市の多文化共生政策・外国人受け入れ・インド系インター校誘致の撤回を求める署名」\n\nいま4,288人が賛同しています。\nあなたも一筆を🙏\n#署名 #移民政策\n\nhttps://yumaki5555.github.io/shomei/p/change-490770634.html");
+document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「タイトル 浜松市の多文化共生政策・外国人受け入れ・インド系インター校誘致の撤回を求める署名」\n\nいま4,288人が賛同しています。\nあなたも一筆を🙏\n#署名 #移民政策\n\nhttps://www.change.org/p/%E3%82%BF%E3%82%A4%E3%83%88%E3%83%AB-%E6%B5%9C%E6%9D%BE%E5%B8%82%E3%81%AE%E5%A4%9A%E6%96%87%E5%8C%96%E5%85%B1%E7%94%9F%E6%94%BF%E7%AD%96-%E5%A4%96%E5%9B%BD%E4%BA%BA%E5%8F%97%E3%81%91%E5%85%A5%E3%82%8C-%E3%82%A4%E3%83%B3%E3%83%89%E7%B3%BB%E3%82%A4%E3%83%B3%E3%82%BF%E3%83%BC%E6%A0%A1%E8%AA%98%E8%87%B4%E3%81%AE%E6%92%A4%E5%9B%9E%E3%82%92%E6%B1%82%E3%82%81%E3%82%8B%E7%BD%B2%E5%90%8D");
 
 const SIGNED_KEY = 'shomei-signed';
 function loadSigned(){ try { return JSON.parse(localStorage.getItem(SIGNED_KEY) || '{}') || {}; } catch (e) { return {}; } }

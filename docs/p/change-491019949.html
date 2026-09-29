@@ -94,7 +94,7 @@ footer{font-size:.78rem;color:var(--sub);margin-top:20px}
 
 <section>
   <h2>📋 基本情報</h2>
-  <dl><dt>発起人</dt><dd>平川 敦雄</dd><dt>開始日</dt><dd>2026-02-08</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
+  <dl><dt>発起人</dt><dd>平川 敦雄</dd><dt>開始日</dt><dd>2026年2月8日</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
 </section>
 
 <section>
@@ -125,7 +125,7 @@ if (end) {
   left.textContent = dl < 0 ? '終了' : dl === 0 ? '本日終了' : `あと${dl}日`;
   if (dl <= 14) left.classList.add('urgent');
 }
-document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「余市の風力発電、送電線設置に反対！美しい農地を守る！」\n\nいま3,918人が賛同しています。\nあなたも一筆を🙏\n#署名 #メガソーラー\n\nhttps://yumaki5555.github.io/shomei/p/change-491019949.html");
+document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「余市の風力発電、送電線設置に反対！美しい農地を守る！」\n\nいま3,918人が賛同しています。\nあなたも一筆を🙏\n#署名 #メガソーラー\n\nhttps://www.change.org/p/%E4%BD%99%E5%B8%82%E3%81%AE%E9%A2%A8%E5%8A%9B%E7%99%BA%E9%9B%BB-%E9%80%81%E9%9B%BB%E7%B7%9A%E8%A8%AD%E7%BD%AE%E3%81%AB%E5%8F%8D%E5%AF%BE-%E7%BE%8E%E3%81%97%E3%81%84%E8%BE%B2%E5%9C%B0%E3%82%92%E5%AE%88%E3%82%8B");
 
 const SIGNED_KEY = 'shomei-signed';
 function loadSigned(){ try { return JSON.parse(localStorage.getItem(SIGNED_KEY) || '{}') || {}; } catch (e) { return {}; } }

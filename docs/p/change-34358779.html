@@ -94,7 +94,7 @@ footer{font-size:.78rem;color:var(--sub);margin-top:20px}
 
 <section>
   <h2>📋 基本情報</h2>
-  <dl><dt>発起人</dt><dd>薩摩リーダーシップフォーラム SELF</dd><dt>開始日</dt><dd>2022-09-06</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
+  <dl><dt>発起人</dt><dd>薩摩リーダーシップフォーラム SELF</dd><dt>開始日</dt><dd>2022年9月6日</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
 </section>
 
 <section>
@@ -125,7 +125,7 @@ if (end) {
   left.textContent = dl < 0 ? '終了' : dl === 0 ? '本日終了' : `あと${dl}日`;
   if (dl <= 14) left.classList.add('urgent');
 }
-document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「【全鹿児島県民を対象にした県民投票の実施を求めます！】」\n\nいま12,308人が賛同しています。\nあなたも一筆を🙏\n#署名 #リコール\n\nhttps://yumaki5555.github.io/shomei/p/change-34358779.html");
+document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「【全鹿児島県民を対象にした県民投票の実施を求めます！】」\n\nいま12,308人が賛同しています。\nあなたも一筆を🙏\n#署名 #リコール\n\nhttps://www.change.org/p/%E3%83%89%E3%83%AB%E3%83%95%E3%82%A3%E3%83%B3%E3%83%9D%E3%83%BC%E3%83%88%E8%B7%A1%E5%9C%B0%E3%81%AB%E3%81%AF%E3%83%8F%E3%82%B3%E3%83%A2%E3%83%8E%E3%81%98%E3%82%83%E3%81%AA%E3%81%8F-%E8%A1%97%E3%82%92%E4%BD%9C%E3%82%8A%E3%81%9F%E3%81%84-%E5%85%A8%E9%B9%BF%E5%85%90%E5%B3%B6%E7%9C%8C%E6%B0%91%E3%82%92%E5%AF%BE%E8%B1%A1%E3%81%AB%E3%81%97%E3%81%9F%E7%9C%8C%E6%B0%91%E6%8A%95%E7%A5%A8%E3%81%AE%E5%AE%9F%E6%96%BD%E3%82%92%E6%B1%82%E3%82%81%E3%81%BE%E3%81%99");
 
 const SIGNED_KEY = 'shomei-signed';
 function loadSigned(){ try { return JSON.parse(localStorage.getItem(SIGNED_KEY) || '{}') || {}; } catch (e) { return {}; } }

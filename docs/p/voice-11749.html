@@ -94,7 +94,7 @@ footer{font-size:.78rem;color:var(--sub);margin-top:20px}
 
 <section>
   <h2>📋 基本情報</h2>
-  <dl><dt>発起人</dt><dd>藤木茂</dd><dt>提出先</dt><dd>地方自治体など</dd><dt>終了日</dt><dd>2026-10-31</dd><dt>署名サイト</dt><dd>Voice</dd></dl>
+  <dl><dt>発起人</dt><dd>藤木茂</dd><dt>提出先</dt><dd>地方自治体など</dd><dt>終了日</dt><dd>2026年10月31日</dd><dt>署名サイト</dt><dd>Voice</dd></dl>
 </section>
 
 <section>
@@ -125,7 +125,7 @@ if (end) {
   left.textContent = dl < 0 ? '終了' : dl === 0 ? '本日終了' : `あと${dl}日`;
   if (dl <= 14) left.classList.add('urgent');
 }
-document.getElementById('share').onclick = () => shareX("✍️【署名募集中】（10/31まで）\n\n「モスク建設反対、路上礼拝取り締まり強化、外国人への生活保護支給禁止などを求めます。」\n\nいま1,074人が賛同しています。\nあなたも一筆を🙏\n#署名 #土葬\n\nhttps://yumaki5555.github.io/shomei/p/voice-11749.html");
+document.getElementById('share').onclick = () => shareX("✍️【署名募集中】（2026/10/31まで）\n\n「モスク建設反対、路上礼拝取り締まり強化、外国人への生活保護支給禁止などを求めます。」\n\nいま1,074人が賛同しています。\nあなたも一筆を🙏\n#署名 #土葬\n\nhttps://voice.charity/events/11749");
 
 const SIGNED_KEY = 'shomei-signed';
 function loadSigned(){ try { return JSON.parse(localStorage.getItem(SIGNED_KEY) || '{}') || {}; } catch (e) { return {}; } }

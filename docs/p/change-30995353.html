@@ -94,7 +94,7 @@ footer{font-size:.78rem;color:var(--sub);margin-top:20px}
 
 <section>
   <h2>📋 基本情報</h2>
-  <dl><dt>発起人</dt><dd>鳥谷 明弘</dd><dt>提出先</dt><dd>山口よしのり , 峰達郎 , 山口よしのり</dd><dt>開始日</dt><dd>2021-10-10</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
+  <dl><dt>発起人</dt><dd>鳥谷 明弘</dd><dt>提出先</dt><dd>山口よしのり , 峰達郎 , 山口よしのり</dd><dt>開始日</dt><dd>2021年10月10日</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
 </section>
 
 <section>
@@ -125,7 +125,7 @@ if (end) {
   left.textContent = dl < 0 ? '終了' : dl === 0 ? '本日終了' : `あと${dl}日`;
   if (dl <= 14) left.classList.add('urgent');
 }
-document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「唐津市七ツ釜沖、世界的規模の洋上風力発電開発計画の再考をお願いします｜唐津の素晴らしい景観、サーフィンの聖地を守りたい」\n\nいま2,945人が賛同しています。\nあなたも一筆を🙏\n#署名 #メガソーラー\n\nhttps://yumaki5555.github.io/shomei/p/change-30995353.html");
+document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「唐津市七ツ釜沖、世界的規模の洋上風力発電開発計画の再考をお願いします｜唐津の素晴らしい景観、サーフィンの聖地を守りたい」\n\nいま2,945人が賛同しています。\nあなたも一筆を🙏\n#署名 #メガソーラー\n\nhttps://www.change.org/p/%E4%BD%90%E8%B3%80%E7%9C%8C%E5%BA%81%E5%AE%9B-%E5%94%90%E6%B4%A5%E5%B8%82%E4%B8%83%E3%83%84%E9%87%9C%E6%B2%96%E3%81%AE%E6%B4%8B%E4%B8%8A%E9%A2%A8%E5%8A%9B%E7%99%BA%E9%9B%BB%E3%81%AB%E5%8F%8D%E5%AF%BE%E3%81%97%E3%81%BE%E3%81%99-%E3%82%B5%E3%83%BC%E3%83%95%E3%82%A3%E3%83%B3%E3%81%AE%E8%81%96%E5%9C%B0%E3%82%92%E5%AE%88%E3%82%8A%E3%81%9F%E3%81%84");
 
 const SIGNED_KEY = 'shomei-signed';
 function loadSigned(){ try { return JSON.parse(localStorage.getItem(SIGNED_KEY) || '{}') || {}; } catch (e) { return {}; } }

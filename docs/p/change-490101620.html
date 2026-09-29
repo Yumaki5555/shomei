@@ -94,7 +94,7 @@ footer{font-size:.78rem;color:var(--sub);margin-top:20px}
 
 <section>
   <h2>📋 基本情報</h2>
-  <dl><dt>発起人</dt><dd>草島 進一</dd><dt>開始日</dt><dd>2024-06-15</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
+  <dl><dt>発起人</dt><dd>草島 進一</dd><dt>開始日</dt><dd>2024年6月15日</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
 </section>
 
 <section>
@@ -125,7 +125,7 @@ if (end) {
   left.textContent = dl < 0 ? '終了' : dl === 0 ? '本日終了' : `あと${dl}日`;
   if (dl <= 14) left.classList.add('urgent');
 }
-document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「日本の洋上風力開発は、浮体式で20ｋｍ沖へ！持続可能な開発へ変更を。」\n\nいま6,695人が賛同しています。\nあなたも一筆を🙏\n#署名 #メガソーラー\n\nhttps://yumaki5555.github.io/shomei/p/change-490101620.html");
+document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「日本の洋上風力開発は、浮体式で20ｋｍ沖へ！持続可能な開発へ変更を。」\n\nいま6,695人が賛同しています。\nあなたも一筆を🙏\n#署名 #メガソーラー\n\nhttps://www.change.org/p/%E6%97%A5%E6%9C%AC%E3%81%AE%E6%B4%8B%E4%B8%8A%E9%A2%A8%E5%8A%9B%E9%96%8B%E7%99%BA%E3%81%AF-%E6%B5%AE%E4%BD%93%E5%BC%8F%E3%81%A720km%E6%B2%96%E3%81%B8-%E6%8C%81%E7%B6%9A%E5%8F%AF%E8%83%BD%E3%81%AA%E9%96%8B%E7%99%BA%E3%81%B8%E5%A4%89%E6%9B%B4%E3%82%92");
 
 const SIGNED_KEY = 'shomei-signed';
 function loadSigned(){ try { return JSON.parse(localStorage.getItem(SIGNED_KEY) || '{}') || {}; } catch (e) { return {}; } }

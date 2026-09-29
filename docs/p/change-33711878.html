@@ -94,7 +94,7 @@ footer{font-size:.78rem;color:var(--sub);margin-top:20px}
 
 <section>
   <h2>📋 基本情報</h2>
-  <dl><dt>発起人</dt><dd>守る会 加美町の未来を</dd><dt>開始日</dt><dd>2022-06-21</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
+  <dl><dt>発起人</dt><dd>守る会 加美町の未来を</dd><dt>開始日</dt><dd>2022年6月21日</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
 </section>
 
 <section>
@@ -125,7 +125,7 @@ if (end) {
   left.textContent = dl < 0 ? '終了' : dl === 0 ? '本日終了' : `あと${dl}日`;
   if (dl <= 14) left.classList.add('urgent');
 }
-document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「子どもたちに、自然のままの加美の山を残したい」\n\nいま18,509人が賛同しています。\nあなたも一筆を🙏\n#署名 #メガソーラー\n\nhttps://yumaki5555.github.io/shomei/p/change-33711878.html");
+document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「子どもたちに、自然のままの加美の山を残したい」\n\nいま18,509人が賛同しています。\nあなたも一筆を🙏\n#署名 #メガソーラー\n\nhttps://www.change.org/p/%E5%AD%90%E3%81%A9%E3%82%82%E3%81%9F%E3%81%A1%E3%81%AB-%E8%87%AA%E7%84%B6%E3%81%AE%E3%81%BE%E3%81%BE%E3%81%AE%E5%8A%A0%E7%BE%8E%E3%81%AE%E5%B1%B1%E3%82%92%E6%AE%8B%E3%81%97%E3%81%9F%E3%81%84");
 
 const SIGNED_KEY = 'shomei-signed';
 function loadSigned(){ try { return JSON.parse(localStorage.getItem(SIGNED_KEY) || '{}') || {}; } catch (e) { return {}; } }

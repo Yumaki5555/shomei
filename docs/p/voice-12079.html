@@ -94,7 +94,7 @@ footer{font-size:.78rem;color:var(--sub);margin-top:20px}
 
 <section>
   <h2>📋 基本情報</h2>
-  <dl><dt>発起人</dt><dd>滝本太郎</dd><dt>提出先</dt><dd>日本国政府など</dd><dt>終了日</dt><dd>2027-02-28</dd><dt>署名サイト</dt><dd>Voice</dd></dl>
+  <dl><dt>発起人</dt><dd>滝本太郎</dd><dt>提出先</dt><dd>日本国政府など</dd><dt>終了日</dt><dd>2027年2月28日</dd><dt>署名サイト</dt><dd>Voice</dd></dl>
 </section>
 
 <section>
@@ -125,7 +125,7 @@ if (end) {
   left.textContent = dl < 0 ? '終了' : dl === 0 ? '本日終了' : `あと${dl}日`;
   if (dl <= 14) left.classList.add('urgent');
 }
-document.getElementById('share').onclick = () => shareX("⭐【おすすめ署名】（2/28まで）\n\n「国に対し、イスラム教対応を考えるための調査研究＆９項目の具体的な要請をします＝「日本国憲法下でのイスラム教対応を…」\n\nいま15,645人が賛同しています。\nあなたも一筆を🙏\n#署名 #土葬\n\nhttps://yumaki5555.github.io/shomei/p/voice-12079.html");
+document.getElementById('share').onclick = () => shareX("⭐【おすすめ署名】（2027/2/28まで）\n\n「国に対し、イスラム教対応を考えるための調査研究＆９項目の具体的な要請をします＝「日本国憲法下でのイスラ…」\n\nいま15,645人が賛同しています。\nあなたも一筆を🙏\n#署名 #土葬\n\nhttps://voice.charity/events/12079");
 
 const SIGNED_KEY = 'shomei-signed';
 function loadSigned(){ try { return JSON.parse(localStorage.getItem(SIGNED_KEY) || '{}') || {}; } catch (e) { return {}; } }

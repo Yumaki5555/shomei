@@ -94,7 +94,7 @@ footer{font-size:.78rem;color:var(--sub);margin-top:20px}
 
 <section>
   <h2>📋 基本情報</h2>
-  <dl><dt>発起人</dt><dd>太陽光開発と自然・未来を考える会</dd><dt>提出先</dt><dd>日本国政府・内閣総理大臣・国会議員</dd><dt>終了日</dt><dd>2026-09-30</dd><dt>署名サイト</dt><dd>Voice</dd></dl>
+  <dl><dt>発起人</dt><dd>太陽光開発と自然・未来を考える会</dd><dt>提出先</dt><dd>日本国政府・内閣総理大臣・国会議員</dd><dt>終了日</dt><dd>2026年9月30日</dd><dt>署名サイト</dt><dd>Voice</dd></dl>
 </section>
 
 <section>
@@ -125,7 +125,7 @@ if (end) {
   left.textContent = dl < 0 ? '終了' : dl === 0 ? '本日終了' : `あと${dl}日`;
   if (dl <= 14) left.classList.add('urgent');
 }
-document.getElementById('share').onclick = () => shareX("✍️【署名募集中】（9/30まで）\n\n「太陽光開発に対する規制強化・パネルリサイクル義務化法案の早期成立を求めます」\n\nいま140人が賛同しています。\nあなたも一筆を🙏\n#署名 #メガソーラー\n\nhttps://yumaki5555.github.io/shomei/p/voice-8317.html");
+document.getElementById('share').onclick = () => shareX("✍️【署名募集中】（2026/9/30まで）\n\n「太陽光開発に対する規制強化・パネルリサイクル義務化法案の早期成立を求めます」\n\nいま140人が賛同しています。\nあなたも一筆を🙏\n#署名 #メガソーラー\n\nhttps://voice.charity/events/8317");
 
 const SIGNED_KEY = 'shomei-signed';
 function loadSigned(){ try { return JSON.parse(localStorage.getItem(SIGNED_KEY) || '{}') || {}; } catch (e) { return {}; } }

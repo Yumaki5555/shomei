@@ -94,7 +94,7 @@ footer{font-size:.78rem;color:var(--sub);margin-top:20px}
 
 <section>
   <h2>📋 基本情報</h2>
-  <dl><dt>発起人</dt><dd>マルモト マサオ</dd><dt>開始日</dt><dd>2026-02-11</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
+  <dl><dt>発起人</dt><dd>マルモト マサオ</dd><dt>開始日</dt><dd>2026年2月11日</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
 </section>
 
 <section>
@@ -125,7 +125,7 @@ if (end) {
   left.textContent = dl < 0 ? '終了' : dl === 0 ? '本日終了' : `あと${dl}日`;
   if (dl <= 14) left.classList.add('urgent');
 }
-document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「憲法改正の是非を問う国民投票に、最低投票率を設定してください！」\n\nいま70,342人が賛同しています。\nあなたも一筆を🙏\n#署名\n\nhttps://yumaki5555.github.io/shomei/p/change-491026508.html");
+document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「憲法改正の是非を問う国民投票に、最低投票率を設定してください！」\n\nいま70,342人が賛同しています。\nあなたも一筆を🙏\n#署名\n\nhttps://www.change.org/p/%E6%86%B2%E6%B3%95%E6%94%B9%E6%AD%A3%E3%81%AE%E6%98%AF%E9%9D%9E%E3%82%92%E5%95%8F%E3%81%86%E5%9B%BD%E6%B0%91%E6%8A%95%E7%A5%A8%E3%81%AB-%E6%9C%80%E4%BD%8E%E6%8A%95%E7%A5%A8%E7%8E%87%E3%82%92%E8%A8%AD%E5%AE%9A%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84");
 
 const SIGNED_KEY = 'shomei-signed';
 function loadSigned(){ try { return JSON.parse(localStorage.getItem(SIGNED_KEY) || '{}') || {}; } catch (e) { return {}; } }

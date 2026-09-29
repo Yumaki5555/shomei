@@ -94,7 +94,7 @@ footer{font-size:.78rem;color:var(--sub);margin-top:20px}
 
 <section>
   <h2>📋 基本情報</h2>
-  <dl><dt>発起人</dt><dd>東 典子</dd><dt>提出先</dt><dd>山口壯</dd><dt>開始日</dt><dd>2021-07-14</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
+  <dl><dt>発起人</dt><dd>東 典子</dd><dt>提出先</dt><dd>山口壯</dd><dt>開始日</dt><dd>2021年7月14日</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
 </section>
 
 <section>
@@ -125,7 +125,7 @@ if (end) {
   left.textContent = dl < 0 ? '終了' : dl === 0 ? '本日終了' : `あと${dl}日`;
   if (dl <= 14) left.classList.add('urgent');
 }
-document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「野鳥の聖域である常呂能取地区に大型風車を建てないでください」\n\nいま21,461人が賛同しています。\nあなたも一筆を🙏\n#署名 #メガソーラー\n\nhttps://yumaki5555.github.io/shomei/p/change-29874157.html");
+document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「野鳥の聖域である常呂能取地区に大型風車を建てないでください」\n\nいま21,461人が賛同しています。\nあなたも一筆を🙏\n#署名 #メガソーラー\n\nhttps://www.change.org/p/%E7%92%B0%E5%A2%83%E5%A4%A7%E8%87%A3-%E5%B1%B1%E5%8F%A3%E5%A3%AF-%E6%A7%98-%E9%87%8E%E9%B3%A5%E3%81%AE%E8%81%96%E5%9F%9F%E3%81%A7%E3%81%82%E3%82%8B%E5%B8%B8%E5%91%82%E8%83%BD%E5%8F%96%E5%9C%B0%E5%8C%BA%E3%81%AB%E5%A4%A7%E5%9E%8B%E9%A2%A8%E8%BB%8A%E3%82%92%E5%BB%BA%E3%81%A6%E3%81%AA%E3%81%84%E3%81%A7%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84");
 
 const SIGNED_KEY = 'shomei-signed';
 function loadSigned(){ try { return JSON.parse(localStorage.getItem(SIGNED_KEY) || '{}') || {}; } catch (e) { return {}; } }

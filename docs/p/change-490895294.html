@@ -94,7 +94,7 @@ footer{font-size:.78rem;color:var(--sub);margin-top:20px}
 
 <section>
   <h2>📋 基本情報</h2>
-  <dl><dt>発起人</dt><dd>後藤 ゆかり</dd><dt>開始日</dt><dd>2025-11-21</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
+  <dl><dt>発起人</dt><dd>後藤 ゆかり</dd><dt>開始日</dt><dd>2025年11月21日</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
 </section>
 
 <section>
@@ -125,7 +125,7 @@ if (end) {
   left.textContent = dl < 0 ? '終了' : dl === 0 ? '本日終了' : `あと${dl}日`;
   if (dl <= 14) left.classList.add('urgent');
 }
-document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「秋田県の自然保護のため鈴木健太知事のリコールを支援する」\n\nいま1,364人が賛同しています。\nあなたも一筆を🙏\n#署名 #メガソーラー #リコール\n\nhttps://yumaki5555.github.io/shomei/p/change-490895294.html");
+document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「秋田県の自然保護のため鈴木健太知事のリコールを支援する」\n\nいま1,364人が賛同しています。\nあなたも一筆を🙏\n#署名 #メガソーラー #リコール\n\nhttps://www.change.org/p/%E7%A7%8B%E7%94%B0%E7%9C%8C%E3%81%AE%E8%87%AA%E7%84%B6%E4%BF%9D%E8%AD%B7%E3%81%AE%E3%81%9F%E3%82%81%E9%88%B4%E6%9C%A8%E5%81%A5%E5%A4%AA%E7%9F%A5%E4%BA%8B%E3%81%AE%E3%83%AA%E3%82%B3%E3%83%BC%E3%83%AB%E3%82%92%E6%94%AF%E6%8F%B4%E3%81%99%E3%82%8B");
 
 const SIGNED_KEY = 'shomei-signed';
 function loadSigned(){ try { return JSON.parse(localStorage.getItem(SIGNED_KEY) || '{}') || {}; } catch (e) { return {}; } }

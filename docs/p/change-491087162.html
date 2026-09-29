@@ -94,7 +94,7 @@ footer{font-size:.78rem;color:var(--sub);margin-top:20px}
 
 <section>
   <h2>📋 基本情報</h2>
-  <dl><dt>発起人</dt><dd>mika mika</dd><dt>開始日</dt><dd>2026-03-11</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
+  <dl><dt>発起人</dt><dd>mika mika</dd><dt>開始日</dt><dd>2026年3月11日</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
 </section>
 
 <section>
@@ -125,7 +125,7 @@ if (end) {
   left.textContent = dl < 0 ? '終了' : dl === 0 ? '本日終了' : `あと${dl}日`;
   if (dl <= 14) left.classList.add('urgent');
 }
-document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「自然を守り、熊を救うための行動を起こしてください」\n\nいま11,122人が賛同しています。\nあなたも一筆を🙏\n#署名 #メガソーラー\n\nhttps://yumaki5555.github.io/shomei/p/change-491087162.html");
+document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「自然を守り、熊を救うための行動を起こしてください」\n\nいま11,122人が賛同しています。\nあなたも一筆を🙏\n#署名 #メガソーラー\n\nhttps://www.change.org/p/%E8%87%AA%E7%84%B6%E3%82%92%E5%AE%88%E3%82%8A-%E7%86%8A%E3%82%92%E6%95%91%E3%81%86%E3%81%9F%E3%82%81%E3%81%AE%E8%A1%8C%E5%8B%95%E3%82%92%E8%B5%B7%E3%81%93%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84");
 
 const SIGNED_KEY = 'shomei-signed';
 function loadSigned(){ try { return JSON.parse(localStorage.getItem(SIGNED_KEY) || '{}') || {}; } catch (e) { return {}; } }

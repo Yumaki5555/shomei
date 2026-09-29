@@ -94,7 +94,7 @@ footer{font-size:.78rem;color:var(--sub);margin-top:20px}
 
 <section>
   <h2>📋 基本情報</h2>
-  <dl><dt>発起人</dt><dd>越智町メガソーラーを考える会 高田宏臣</dd><dt>開始日</dt><dd>2025-02-01</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
+  <dl><dt>発起人</dt><dd>越智町メガソーラーを考える会 高田宏臣</dd><dt>開始日</dt><dd>2025年2月1日</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
 </section>
 
 <section>
@@ -125,7 +125,7 @@ if (end) {
   left.textContent = dl < 0 ? '終了' : dl === 0 ? '本日終了' : `あと${dl}日`;
   if (dl <= 14) left.classList.add('urgent');
 }
-document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「千葉市越智地区メガソーラー開発中止運動」\n\nいま22,284人が賛同しています。\nあなたも一筆を🙏\n#署名 #メガソーラー\n\nhttps://yumaki5555.github.io/shomei/p/change-490403101.html");
+document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「千葉市越智地区メガソーラー開発中止運動」\n\nいま22,284人が賛同しています。\nあなたも一筆を🙏\n#署名 #メガソーラー\n\nhttps://www.change.org/p/%E5%8D%83%E8%91%89%E5%B8%82%E8%B6%8A%E6%99%BA%E5%9C%B0%E5%8C%BA%E3%83%A1%E3%82%AC%E3%82%BD%E3%83%BC%E3%83%A9%E3%83%BC%E9%96%8B%E7%99%BA%E4%B8%AD%E6%AD%A2%E9%81%8B%E5%8B%95");
 
 const SIGNED_KEY = 'shomei-signed';
 function loadSigned(){ try { return JSON.parse(localStorage.getItem(SIGNED_KEY) || '{}') || {}; } catch (e) { return {}; } }

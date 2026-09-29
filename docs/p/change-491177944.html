@@ -94,7 +94,7 @@ footer{font-size:.78rem;color:var(--sub);margin-top:20px}
 
 <section>
   <h2>📋 基本情報</h2>
-  <dl><dt>発起人</dt><dd>九十九里の海を まもる会</dd><dt>開始日</dt><dd>2026-04-08</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
+  <dl><dt>発起人</dt><dd>九十九里の海を まもる会</dd><dt>開始日</dt><dd>2026年4月8日</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
 </section>
 
 <section>
@@ -125,7 +125,7 @@ if (end) {
   left.textContent = dl < 0 ? '終了' : dl === 0 ? '本日終了' : `あと${dl}日`;
   if (dl <= 14) left.classList.add('urgent');
 }
-document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「九十九里の海をまもって！二酸化炭素を九十九里沖海底に捨てる首都圏CCS事業を中止してください」\n\nいま7,614人が賛同しています。\nあなたも一筆を🙏\n#署名\n\nhttps://yumaki5555.github.io/shomei/p/change-491177944.html");
+document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「九十九里の海をまもって！二酸化炭素を九十九里沖海底に捨てる首都圏CCS事業を中止してください」\n\nいま7,614人が賛同しています。\nあなたも一筆を🙏\n#署名\n\nhttps://www.change.org/p/%E4%B9%9D%E5%8D%81%E4%B9%9D%E9%87%8C%E3%81%AE%E6%B5%B7%E3%82%92%E3%81%BE%E3%82%82%E3%81%A3%E3%81%A6-%E4%BA%8C%E9%85%B8%E5%8C%96%E7%82%AD%E7%B4%A0%E3%82%92%E4%B9%9D%E5%8D%81%E4%B9%9D%E9%87%8C%E6%B2%96%E6%B5%B7%E5%BA%95%E3%81%AB%E6%8D%A8%E3%81%A6%E3%82%8B%E9%A6%96%E9%83%BD%E5%9C%8Fccs%E4%BA%8B%E6%A5%AD%E3%82%92%E4%B8%AD%E6%AD%A2%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84");
 
 const SIGNED_KEY = 'shomei-signed';
 function loadSigned(){ try { return JSON.parse(localStorage.getItem(SIGNED_KEY) || '{}') || {}; } catch (e) { return {}; } }

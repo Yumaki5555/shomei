@@ -94,7 +94,7 @@ footer{font-size:.78rem;color:var(--sub);margin-top:20px}
 
 <section>
   <h2>📋 基本情報</h2>
-  <dl><dt>発起人</dt><dd>全国保険医団体連合会 （保団連）</dd><dt>開始日</dt><dd>2025-03-04</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
+  <dl><dt>発起人</dt><dd>全国保険医団体連合会 （保団連）</dd><dt>開始日</dt><dd>2025年3月4日</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
 </section>
 
 <section>
@@ -125,7 +125,7 @@ if (end) {
   left.textContent = dl < 0 ? '終了' : dl === 0 ? '本日終了' : `あと${dl}日`;
   if (dl <= 14) left.classList.add('urgent');
 }
-document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「#高額療養費の限度額引き上げを撤回してください」\n\nいま321,974人が賛同しています。\nあなたも一筆を🙏\n#署名\n\nhttps://yumaki5555.github.io/shomei/p/change-490451181.html");
+document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「#高額療養費の限度額引き上げを撤回してください」\n\nいま321,974人が賛同しています。\nあなたも一筆を🙏\n#署名\n\nhttps://www.change.org/p/%E9%AB%98%E9%A1%8D%E7%99%82%E9%A4%8A%E8%B2%BB%E3%81%AE%E9%99%90%E5%BA%A6%E9%A1%8D%E5%BC%95%E3%81%8D%E4%B8%8A%E3%81%92%E3%82%92%E6%92%A4%E5%9B%9E%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84");
 
 const SIGNED_KEY = 'shomei-signed';
 function loadSigned(){ try { return JSON.parse(localStorage.getItem(SIGNED_KEY) || '{}') || {}; } catch (e) { return {}; } }

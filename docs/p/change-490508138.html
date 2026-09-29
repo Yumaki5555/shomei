@@ -94,7 +94,7 @@ footer{font-size:.78rem;color:var(--sub);margin-top:20px}
 
 <section>
   <h2>📋 基本情報</h2>
-  <dl><dt>発起人</dt><dd>宗教者からの 性暴力被害者を支援する会</dd><dt>開始日</dt><dd>2025-04-02</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
+  <dl><dt>発起人</dt><dd>宗教者からの 性暴力被害者を支援する会</dd><dt>開始日</dt><dd>2025年4月2日</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
 </section>
 
 <section>
@@ -125,7 +125,7 @@ if (end) {
   left.textContent = dl < 0 ? '終了' : dl === 0 ? '本日終了' : `あと${dl}日`;
   if (dl <= 14) left.classList.add('urgent');
 }
-document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「性暴力加害僧侶への処分が軽すぎる 天台宗宗務総長は不服申立をして下さい」\n\nいま33,229人が賛同しています。\nあなたも一筆を🙏\n#署名 #リコール\n\nhttps://yumaki5555.github.io/shomei/p/change-490508138.html");
+document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「性暴力加害僧侶への処分が軽すぎる 天台宗宗務総長は不服申立をして下さい」\n\nいま33,229人が賛同しています。\nあなたも一筆を🙏\n#署名 #リコール\n\nhttps://www.change.org/p/%E6%80%A7%E6%9A%B4%E5%8A%9B%E5%8A%A0%E5%AE%B3%E5%83%A7%E4%BE%B6%E3%81%B8%E3%81%AE%E5%87%A6%E5%88%86%E3%81%8C%E8%BB%BD%E3%81%99%E3%81%8E%E3%82%8B-%E5%A4%A9%E5%8F%B0%E5%AE%97%E5%AE%97%E5%8B%99%E7%B7%8F%E9%95%B7%E3%81%AF%E4%B8%8D%E6%9C%8D%E7%94%B3%E7%AB%8B%E3%82%92%E3%81%97%E3%81%A6%E4%B8%8B%E3%81%95%E3%81%84");
 
 const SIGNED_KEY = 'shomei-signed';
 function loadSigned(){ try { return JSON.parse(localStorage.getItem(SIGNED_KEY) || '{}') || {}; } catch (e) { return {}; } }

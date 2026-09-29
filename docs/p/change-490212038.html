@@ -94,7 +94,7 @@ footer{font-size:.78rem;color:var(--sub);margin-top:20px}
 
 <section>
   <h2>📋 基本情報</h2>
-  <dl><dt>発起人</dt><dd>原発新増設費用を国民から徴収する制度（RABモデル）導入 反対署名呼びかけ人・呼びかけ団体</dd><dt>開始日</dt><dd>2024-09-15</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
+  <dl><dt>発起人</dt><dd>原発新増設費用を国民から徴収する制度（RABモデル）導入 反対署名呼びかけ人・呼びかけ団体</dd><dt>開始日</dt><dd>2024年9月15日</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
 </section>
 
 <section>
@@ -125,7 +125,7 @@ if (end) {
   left.textContent = dl < 0 ? '終了' : dl === 0 ? '本日終了' : `あと${dl}日`;
   if (dl <= 14) left.classList.add('urgent');
 }
-document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「巨額の原発新増設コストを国民からこっそり徴収する新たな制度 #RABモデル の導入をやめてください」\n\nいま34,456人が賛同しています。\nあなたも一筆を🙏\n#署名 #メガソーラー\n\nhttps://yumaki5555.github.io/shomei/p/change-490212038.html");
+document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「巨額の原発新増設コストを国民からこっそり徴収する新たな制度 #RABモデル の導入をやめてください」\n\nいま34,456人が賛同しています。\nあなたも一筆を🙏\n#署名 #メガソーラー\n\nhttps://www.change.org/p/%E5%B7%A8%E9%A1%8D%E3%81%AE%E5%8E%9F%E7%99%BA%E6%96%B0%E5%A2%97%E8%A8%AD%E3%82%B3%E3%82%B9%E3%83%88%E3%82%92%E5%9B%BD%E6%B0%91%E3%81%8B%E3%82%89%E3%81%93%E3%81%A3%E3%81%9D%E3%82%8A%E5%BE%B4%E5%8F%8E%E3%81%99%E3%82%8B%E6%96%B0%E3%81%9F%E3%81%AA%E5%88%B6%E5%BA%A6-rab%E3%83%A2%E3%83%87%E3%83%AB-%E3%81%AE%E5%B0%8E%E5%85%A5%E3%82%92%E3%82%84%E3%82%81%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84-d7ba735f-8735-42f0-8ac0-da534a1797d9");
 
 const SIGNED_KEY = 'shomei-signed';
 function loadSigned(){ try { return JSON.parse(localStorage.getItem(SIGNED_KEY) || '{}') || {}; } catch (e) { return {}; } }

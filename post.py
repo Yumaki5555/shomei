@@ -34,7 +34,7 @@ def main():
     site, main_tag = config["site_url"], config["main_hashtag"]
     hashtag_of = {t["name"]: t["hashtag"] for t in config["tags"]}
     today = date.today()
-    share = lambda it: share_text(it, main_tag, hashtag_of, site)
+    share = lambda it: share_text(it, main_tag, hashtag_of)
 
     posts = []  # (見出し, 本文)
     used = set()
@@ -47,7 +47,7 @@ def main():
 
     posts.append(("まとめ", (
         f"いま賛同を集めている署名を{len(items)}件まとめました✍️\n"
-        f"{'・'.join(t['name'] for t in config['tags'][:3])}など、暮らしに身近なテーマも。\n"
+        f"{'、'.join(t['name'] for t in config['tags'][:3])}など、暮らしに身近なテーマも。\n"
         f"気になるものから一筆を🙏\n"
         f"{site}\n{main_tag}"
     )))

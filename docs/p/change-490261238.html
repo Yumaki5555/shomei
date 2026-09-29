@@ -94,7 +94,7 @@ footer{font-size:.78rem;color:var(--sub);margin-top:20px}
 
 <section>
   <h2>📋 基本情報</h2>
-  <dl><dt>発起人</dt><dd>瀬良 周治</dd><dt>開始日</dt><dd>2024-10-21</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
+  <dl><dt>発起人</dt><dd>瀬良 周治</dd><dt>開始日</dt><dd>2024年10月21日</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
 </section>
 
 <section>
@@ -125,7 +125,7 @@ if (end) {
   left.textContent = dl < 0 ? '終了' : dl === 0 ? '本日終了' : `あと${dl}日`;
   if (dl <= 14) left.classList.add('urgent');
 }
-document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「住宅地で「大型民泊事業への制限」を求めます！」\n\nいま14,096人が賛同しています。\nあなたも一筆を🙏\n#署名 #民泊\n\nhttps://yumaki5555.github.io/shomei/p/change-490261238.html");
+document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「住宅地で「大型民泊事業への制限」を求めます！」\n\nいま14,096人が賛同しています。\nあなたも一筆を🙏\n#署名 #民泊\n\nhttps://www.change.org/p/%E4%BD%8F%E5%AE%85%E5%9C%B0%E3%81%A7-%E5%A4%A7%E5%9E%8B%E6%B0%91%E6%B3%8A%E4%BA%8B%E6%A5%AD%E3%81%B8%E3%81%AE%E5%88%B6%E9%99%90-%E3%82%92%E6%B1%82%E3%82%81%E3%81%BE%E3%81%99");
 
 const SIGNED_KEY = 'shomei-signed';
 function loadSigned(){ try { return JSON.parse(localStorage.getItem(SIGNED_KEY) || '{}') || {}; } catch (e) { return {}; } }

@@ -94,7 +94,7 @@ footer{font-size:.78rem;color:var(--sub);margin-top:20px}
 
 <section>
   <h2>📋 基本情報</h2>
-  <dl><dt>発起人</dt><dd>上岡 侑香</dd><dt>開始日</dt><dd>2026-01-03</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
+  <dl><dt>発起人</dt><dd>上岡 侑香</dd><dt>開始日</dt><dd>2026年1月3日</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
 </section>
 
 <section>
@@ -125,7 +125,7 @@ if (end) {
   left.textContent = dl < 0 ? '終了' : dl === 0 ? '本日終了' : `あと${dl}日`;
   if (dl <= 14) left.classList.add('urgent');
 }
-document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「福岡県糸島市をムスリムから護りたい」\n\nいま2,124人が賛同しています。\nあなたも一筆を🙏\n#署名 #土葬\n\nhttps://yumaki5555.github.io/shomei/p/change-490950564.html");
+document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「福岡県糸島市をムスリムから護りたい」\n\nいま2,124人が賛同しています。\nあなたも一筆を🙏\n#署名 #土葬\n\nhttps://www.change.org/p/%E7%A6%8F%E5%B2%A1%E7%9C%8C%E7%B3%B8%E5%B3%B6%E5%B8%82%E3%82%92%E3%83%A0%E3%82%B9%E3%83%AA%E3%83%A0%E3%81%8B%E3%82%89%E8%AD%B7%E3%82%8A%E3%81%9F%E3%81%84");
 
 const SIGNED_KEY = 'shomei-signed';
 function loadSigned(){ try { return JSON.parse(localStorage.getItem(SIGNED_KEY) || '{}') || {}; } catch (e) { return {}; } }

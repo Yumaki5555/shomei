@@ -94,7 +94,7 @@ footer{font-size:.78rem;color:var(--sub);margin-top:20px}
 
 <section>
   <h2>📋 基本情報</h2>
-  <dl><dt>発起人</dt><dd>橋本 義人</dd><dt>開始日</dt><dd>2024-05-16</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
+  <dl><dt>発起人</dt><dd>橋本 義人</dd><dt>開始日</dt><dd>2024年5月16日</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
 </section>
 
 <section>
@@ -125,7 +125,7 @@ if (end) {
   left.textContent = dl < 0 ? '終了' : dl === 0 ? '本日終了' : `あと${dl}日`;
   if (dl <= 14) left.classList.add('urgent');
 }
-document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「青森県の風力発電計画を中止してください」\n\nいま10,039人が賛同しています。\nあなたも一筆を🙏\n#署名 #メガソーラー\n\nhttps://yumaki5555.github.io/shomei/p/change-490060869.html");
+document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「青森県の風力発電計画を中止してください」\n\nいま10,039人が賛同しています。\nあなたも一筆を🙏\n#署名 #メガソーラー\n\nhttps://www.change.org/p/%E9%9D%92%E6%A3%AE%E7%9C%8C%E3%81%AE%E9%A2%A8%E5%8A%9B%E7%99%BA%E9%9B%BB%E8%A8%88%E7%94%BB%E3%82%92%E4%B8%AD%E6%AD%A2%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84");
 
 const SIGNED_KEY = 'shomei-signed';
 function loadSigned(){ try { return JSON.parse(localStorage.getItem(SIGNED_KEY) || '{}') || {}; } catch (e) { return {}; } }

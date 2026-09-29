@@ -94,7 +94,7 @@ footer{font-size:.78rem;color:var(--sub);margin-top:20px}
 
 <section>
   <h2>📋 基本情報</h2>
-  <dl><dt>発起人</dt><dd>みどり 日野</dd><dt>開始日</dt><dd>2026-09-01</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
+  <dl><dt>発起人</dt><dd>みどり 日野</dd><dt>開始日</dt><dd>2026年9月1日</dd><dt>署名サイト</dt><dd>change.org</dd></dl>
 </section>
 
 <section>
@@ -125,7 +125,7 @@ if (end) {
   left.textContent = dl < 0 ? '終了' : dl === 0 ? '本日終了' : `あと${dl}日`;
   if (dl <= 14) left.classList.add('urgent');
 }
-document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「くらしと環境への影響、安全対策を示さないまま、巨大データセンターの工事を認めないでください」\n\nいま848人が賛同しています。\nあなたも一筆を🙏\n#署名\n\nhttps://yumaki5555.github.io/shomei/p/change-491497231.html");
+document.getElementById('share').onclick = () => shareX("✍️【署名募集中】\n\n「くらしと環境への影響、安全対策を示さないまま、巨大データセンターの工事を認めないでください」\n\nいま848人が賛同しています。\nあなたも一筆を🙏\n#署名\n\nhttps://www.change.org/p/%E3%81%8F%E3%82%89%E3%81%97%E3%81%A8%E7%92%B0%E5%A2%83%E3%81%B8%E3%81%AE%E5%BD%B1%E9%9F%BF-%E5%AE%89%E5%85%A8%E5%AF%BE%E7%AD%96%E3%82%92%E7%A4%BA%E3%81%95%E3%81%AA%E3%81%84%E3%81%BE%E3%81%BE-%E5%B7%A8%E5%A4%A7%E3%83%87%E3%83%BC%E3%82%BF%E3%82%BB%E3%83%B3%E3%82%BF%E3%83%BC%E3%81%AE%E5%B7%A5%E4%BA%8B%E3%82%92%E8%AA%8D%E3%82%81%E3%81%AA%E3%81%84%E3%81%A7%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84");
 
 const SIGNED_KEY = 'shomei-signed';
 function loadSigned(){ try { return JSON.parse(localStorage.getItem(SIGNED_KEY) || '{}') || {}; } catch (e) { return {}; } }
