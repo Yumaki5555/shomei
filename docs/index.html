@@ -34,6 +34,10 @@ a{color:var(--accent)}
 .signedmark{background:var(--up);color:#fff;padding:1px 8px;border-radius:6px;font-weight:700}
 .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 18px;border-radius:10px;font-size:.92rem;opacity:0;transition:opacity .2s;pointer-events:none;z-index:9}
 .toast.show{opacity:1}
+.notice{background:var(--pick-bg);border:1.5px solid var(--pick);border-radius:12px;padding:10px 14px;margin:12px 0;font-size:.88rem;line-height:1.6}
+.notice b.h{display:block;color:var(--pick);margin-bottom:2px}
+.notice ul{margin:0;padding-left:1.2em}
+.notice li{margin:2px 0}
 
 .wrap{max-width:860px;margin:0 auto;padding:0 16px}
 header{padding:28px 0 12px}
@@ -79,6 +83,14 @@ footer{font-size:.8rem;color:var(--sub);padding:20px 0 40px;border-top:1px solid
   <h1>✍️ 署名掲示板</h1>
   <p class="lead">いま賛同を集めている署名運動を、テーマ別・地域別にまとめています。あなたの一筆が声になります。</p>
   <div class="stats"><span>掲載中 <b>0</b> 件</span><span id="mine"></span><span id="updated"></span></div>
+  <div class="notice" role="note">
+    <b class="h">⚠️ 署名する前にご確認ください</b>
+    <ul>
+      <li>このページでは、change.org と Voice の2つの署名サイトをキーワードで検索し、その中から運営者が選んだ署名を載せています。内容を保証するものではありません。</li>
+      <li>署名する前に、必ず<b>概要</b>と<b>発起人</b>を確認してください。</li>
+      <li>change.org の署名については、内容をよく確かめたうえで、ご自身で判断してください。</li>
+    </ul>
+  </div>
 </header>
 
 <figure class="chara"><img id="chara" src="chara/1fb2f4a192.jpg" alt="しょめたん（署名をあつめる妖精）" width="800" height="533"></figure>

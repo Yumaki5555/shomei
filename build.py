@@ -263,6 +263,8 @@ def build_summary_pages(items, tag_defs, config, hashtag_of):
             "__SHARE_JS__": SHARE_JS,
             "__SIGNED_JS__": SIGNED_JS,
             "__ID__": json.dumps(it["id"]),
+            "__CHANGE_NOTE__": ("<li>change.org の署名です。内容をよく確かめたうえで、ご自身で判断してください。</li>"
+                                if it["site"] == "Change" else ""),
             "__SITE_NAME__": e(config["site_name"]),
             "__PAGE_URL__": e(site_url + summary_path(it)),
             "__OG_IMAGE__": f'<meta property="og:image" content="{e(img_abs)}">' if img_abs else "",
@@ -297,6 +299,10 @@ a{color:var(--accent)}
 .signedmark{background:var(--up);color:#fff;padding:1px 8px;border-radius:6px;font-weight:700}
 .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 18px;border-radius:10px;font-size:.92rem;opacity:0;transition:opacity .2s;pointer-events:none;z-index:9}
 .toast.show{opacity:1}
+.notice{background:var(--pick-bg);border:1.5px solid var(--pick);border-radius:12px;padding:10px 14px;margin:12px 0;font-size:.88rem;line-height:1.6}
+.notice b.h{display:block;color:var(--pick);margin-bottom:2px}
+.notice ul{margin:0;padding-left:1.2em}
+.notice li{margin:2px 0}
 """
 
 
@@ -348,6 +354,14 @@ footer{font-size:.78rem;color:var(--sub);margin-top:20px}
 <h1>__TITLE__</h1>
 __IMG__
 <div class="countbox"><span><small>賛同者</small> <b>__COUNT__</b> 人</span>__GROW__</div>
+
+<div class="notice" role="note">
+  <b class="h">⚠️ 署名する前にご確認ください</b>
+  <ul>
+    <li>下の「どんな署名？」と「発起人」を必ず確認してから署名してください。</li>
+    __CHANGE_NOTE__
+  </ul>
+</div>
 
 <div class="btns">
   <a class="btn go" href="__URL__" target="_blank" rel="noopener">__SITE__ で署名する</a>
@@ -462,6 +476,14 @@ footer{font-size:.8rem;color:var(--sub);padding:20px 0 40px;border-top:1px solid
   <h1>✍️ __SITE_NAME__</h1>
   <p class="lead">__SITE_DESC__</p>
   <div class="stats"><span>掲載中 <b>__COUNT__</b> 件</span><span id="mine"></span><span id="updated"></span></div>
+  <div class="notice" role="note">
+    <b class="h">⚠️ 署名する前にご確認ください</b>
+    <ul>
+      <li>このページでは、change.org と Voice の2つの署名サイトをキーワードで検索し、その中から運営者が選んだ署名を載せています。内容を保証するものではありません。</li>
+      <li>署名する前に、必ず<b>概要</b>と<b>発起人</b>を確認してください。</li>
+      <li>change.org の署名については、内容をよく確かめたうえで、ご自身で判断してください。</li>
+    </ul>
+  </div>
 </header>
 
 <figure class="chara"><img id="chara" src="__CHARA_ALL__" alt="しょめたん（署名をあつめる妖精）" width="800" height="533"></figure>
