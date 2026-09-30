@@ -52,7 +52,7 @@ def main():
         f"{site}\n{main_tag}"
     )))
 
-    add("⭐おすすめ", [it for it in items if it.get("pick")])
+    add("⭐おすすめ", sorted([it for it in items if it.get("pick")], key=lambda it: it.get("pick_rank") or 999))
 
     rising = sorted([it for it in items if growth(it) and growth(it)[0] > 0], key=lambda it: growth(it)[2], reverse=True)
     add("最近伸びている", rising[:RISING_TOP])

@@ -172,7 +172,7 @@ def main():
             "id": it["id"], "site": it["site"], "url": it["url"], "title": it["title"],
             "starter": it.get("starter", ""), "target": it.get("target", ""),
             "start": it.get("start", ""), "end": it.get("end", ""),
-            "tags": it["tags"], "pref": it.get("pref", ""), "pick": bool(it.get("pick")),
+            "tags": it["tags"], "pref": it.get("pref", ""), "pick": bool(it.get("pick")), "rank": it.get("pick_rank") or 999,
             "found": it.get("found", ""), "count": latest_count(it),
             "grow": g[0] if g else None, "growFrom": g[1] if g else None, "rate": g[2] if g else 0,
             "page": summary_path(it), "share": share_text(it, config["main_hashtag"], hashtag_of),
@@ -612,7 +612,8 @@ function render(){
     (!state.pref || i.pref === state.pref) &&
     (!state.hideSigned || !signed[i.id]) &&
     (!state.q || (i.title + i.starter + i.target + i.pref).includes(state.q))
-  ).sort((a, b) => (b.pick - a.pick) || sorters[state.sort](a, b));   // おすすめはいつも先頭
+  // おすすめはいつも先頭（おすすめどうしは、選別画面で決めた順位の順）
+  ).sort((a, b) => (b.pick - a.pick) || (a.pick && b.pick ? a.rank - b.rank : 0) || sorters[state.sort](a, b));
   const label = document.querySelector('#sort option:checked').textContent;
   document.getElementById('count').textContent = `${items.length} 件を表示中（⭐おすすめ → ${label}）`;
   const list = document.getElementById('list');

@@ -27,8 +27,39 @@ def tag_names():
     return names
 
 
+def latest_count(it):
+    c = sorted(it["counts"].items())
+    return c[-1][1] if c else 0
+
+
+def renumber_picks(data):
+    """おすすめの順位（pick_rank）を 1, 2, 3… に振り直す。
+    順位がまだ無いおすすめは、署名が多い順で後ろに付ける。"""
+    is_pick = lambda it: it.get("pick") and it["status"] == "掲載"
+    picks = [it for it in data["items"].values() if is_pick(it)]
+    picks.sort(key=lambda it: (it.get("pick_rank") or 10**9, -latest_count(it)))
+    for n, it in enumerate(picks, 1):
+        it["pick_rank"] = n
+    for it in data["items"].values():
+        if not is_pick(it):
+            it.pop("pick_rank", None)
+    return picks
+
+
+def move_pick(data, item_id, step):
+    """おすすめの順位を1つ上（step=-1）または下（step=1）に動かす。"""
+    picks = renumber_picks(data)
+    ids = [it["id"] for it in picks]
+    if item_id not in ids:
+        return
+    i = ids.index(item_id)
+    j = i + step
+    if 0 <= j < len(picks):
+        picks[i]["pick_rank"], picks[j]["pick_rank"] = picks[j]["pick_rank"], picks[i]["pick_rank"]
+
+
 def apply_update(body):
-    """画面から届いた変更を data.json に書き込む。"""
+    """画面から届いた変更を data.json に書き込む。変わった署名の一覧を返す。"""
     with lock:
         data = load_json(DATA_PATH, {"items": {}})
         changed = []
@@ -46,15 +77,21 @@ def apply_update(body):
                         it["image"] = ""
             if "pick" in body:
                 it["pick"] = bool(body["pick"])
-                if it["pick"] and it["status"] == "候補":
-                    it["status"] = "掲載"  # おすすめにしたものは載せる
+                if it["pick"]:
+                    it["pick_rank"] = 10**6  # 新しいおすすめは一番下に加える
+                    if it["status"] == "候補":
+                        it["status"] = "掲載"  # おすすめにしたものは載せる
             if isinstance(body.get("tags"), list):
                 it["tags"] = [t for t in body["tags"] if isinstance(t, str) and t]
             if isinstance(body.get("pref"), str):
                 it["pref"] = body["pref"]
             changed.append(it)
+        if body.get("move") in (-1, 1) and body.get("ids"):
+            move_pick(data, body["ids"][0], body["move"])
+        # 順位が変わるとほかのおすすめの順位も動くので、おすすめは全部返す
+        picks = renumber_picks(data)
         save_json(DATA_PATH, data)
-        return changed
+        return changed + [p for p in picks if p not in changed]
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -73,7 +110,10 @@ class Handler(BaseHTTPRequestHandler):
         if self.path == "/":
             self.send(200, PAGE, "text/html; charset=utf-8")
         elif self.path == "/api/data":
-            data = load_json(DATA_PATH, {"items": {}})
+            with lock:
+                data = load_json(DATA_PATH, {"items": {}})
+                renumber_picks(data)  # 順位がまだ無いおすすめに順位を付ける
+                save_json(DATA_PATH, data)
             payload = {"items": list(data["items"].values()), "tags": tag_names(), "prefs": PREFS}
             self.send(200, json.dumps(payload, ensure_ascii=False), "application/json; charset=utf-8")
         elif self.path.startswith("/img/"):
@@ -131,6 +171,10 @@ h1{font-size:1.3rem;margin:20px 0 4px}
 .b-ok{background:var(--ok);color:#fff}.b-ng{background:var(--chip);color:var(--ng)}
 .b-pick{background:var(--chip);color:var(--pick)}.b-pick.on{background:var(--pick);color:#fff}
 .b-back{background:var(--chip);color:var(--ink)}
+.rank{display:flex;align-items:center;gap:8px;margin:0 0 6px}
+.rank b{font-size:1.2rem;color:var(--pick);min-width:3em}
+.rank button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:5px 12px;cursor:pointer;font-family:inherit;font-weight:700}
+.rank button:disabled{opacity:.35;cursor:default}
 .st{font-size:.78rem;font-weight:700;padding:1px 8px;border-radius:6px;background:var(--chip)}
 .more{display:block;margin:16px auto;padding:10px 24px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;font-family:inherit}
 .toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 16px;border-radius:8px;font-size:.9rem;opacity:0;transition:opacity .2s}
@@ -169,10 +213,14 @@ async function update(ids, change, msg){
   render();
 }
 
+const PICK = '⭐おすすめ';  // おすすめの順番を決めるタブ
+const isPick = i => i.pick && i.status === '掲載';
+
 function filtered(){
-  return D.items.filter(i => i.status === state.status &&
-      (!state.kw || i.keywords.includes(state.kw)) &&
-      (!state.q || (i.title + i.starter + i.target + i.summary).includes(state.q)))
+  const hit = i => (!state.kw || i.keywords.includes(state.kw)) &&
+                   (!state.q || (i.title + i.starter + i.target + i.summary).includes(state.q));
+  if (state.status === PICK) return D.items.filter(i => isPick(i) && hit(i)).sort((a, b) => a.pick_rank - b.pick_rank);
+  return D.items.filter(i => i.status === state.status && hit(i))
     .sort((a, b) => state.sort === 'count' ? latest(b) - latest(a) : (b[state.sort] || '').localeCompare(a[state.sort] || ''));
 }
 
@@ -183,9 +231,14 @@ function card(i){
   const acts = i.status === '候補'
     ? `<button class="b-ok" data-act="掲載">載せる</button><button class="b-ng" data-act="非掲載">載せない</button>`
     : `<button class="b-back" data-act="候補">候補にもどす</button>` + (i.status === '掲載' ? `<button class="b-ng" data-act="非掲載">載せない</button>` : '');
+  const nPick = D.items.filter(isPick).length;
+  const rank = state.status === PICK ? `<div class="rank"><b>${i.pick_rank}位</b>
+      <button type="button" data-move="-1" ${i.pick_rank <= 1 ? 'disabled' : ''}>↑ 上へ</button>
+      <button type="button" data-move="1" ${i.pick_rank >= nPick ? 'disabled' : ''}>↓ 下へ</button></div>` : '';
   return `<div class="card${i.pick ? ' picked' : ''}" data-id="${esc(i.id)}">
     ${img ? `<img src="${esc(img)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : '<div class="noimg">画像なし</div>'}
     <div>
+      ${rank}
       <h2><a href="${esc(i.url)}" target="_blank" rel="noopener">${esc(i.title)}</a></h2>
       <div class="meta"><span class="st">${esc(i.status)}</span><span>${i.site === 'Change' ? 'change.org' : 'Voice'}</span>
         <span>賛同 <b>${latest(i).toLocaleString()}</b> 人</span>
@@ -200,10 +253,13 @@ function card(i){
 
 function render(){
   const tabs = document.getElementById('tabs');
-  tabs.innerHTML = ['候補','掲載','非掲載','終了'].map(s =>
-    `<button class="tab" type="button" data-s="${s}" aria-pressed="${s === state.status}">${s} ${D.items.filter(i => i.status === s).length}</button>`).join('');
+  tabs.innerHTML = ['候補','掲載',PICK,'非掲載','終了'].map(s =>
+    `<button class="tab" type="button" data-s="${s}" aria-pressed="${s === state.status}">${s} ${D.items.filter(i => s === PICK ? isPick(i) : i.status === s).length}</button>`).join('');
   const items = filtered();
-  document.getElementById('count').textContent = `${items.length} 件`;
+  document.getElementById('count').textContent = state.status === PICK
+    ? `${items.length} 件（この順番で公開ページの一番上に並びます。「↑ 上へ」「↓ 下へ」で入れ替えられます）`
+    : `${items.length} 件`;
+  document.getElementById('sort').hidden = state.status === PICK;
   document.getElementById('list').innerHTML = items.slice(0, state.shown).map(card).join('') || '<p class="help">ありません</p>';
   document.getElementById('more').hidden = items.length <= state.shown;
   document.getElementById('bulk').hidden = state.status !== '候補' || !items.length;
@@ -221,6 +277,8 @@ document.getElementById('bulk').onclick = () => {
 document.getElementById('list').addEventListener('click', e => {
   const c = e.target.closest('.card'); if (!c) return;
   const id = c.dataset.id, it = D.items.find(x => x.id === id);
+  const mv = e.target.closest('[data-move]');
+  if (mv) { update([id], {move: +mv.dataset.move}, mv.dataset.move === '-1' ? '1つ上へ動かしました' : '1つ下へ動かしました'); return; }
   const act = e.target.closest('[data-act]');
   if (act) update([id], {status: act.dataset.act}, `「${act.textContent}」にしました`);
   if (e.target.closest('[data-pick]')) update([id], {pick: !it.pick}, it.pick ? 'おすすめを外しました' : '⭐おすすめにしました（掲載にもなります）');
