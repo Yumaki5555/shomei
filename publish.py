@@ -5,6 +5,7 @@
 """
 import argparse
 import subprocess
+import time
 from datetime import date
 from pathlib import Path
 
@@ -34,7 +35,15 @@ def main():
     if not (HERE / ".git").exists():
         print("まだGitHubとつながっていないので、公開はしていません（README.md の「公開する」を参照）。")
         return
-    git("add", "-A")
+    # Dropboxが同期中だと失敗することがあるので、少し待って何度か試す
+    for attempt in range(5):
+        r = git("add", "-A")
+        if r.returncode == 0:
+            break
+        time.sleep(3)
+    else:
+        print("保存の準備（git add）に失敗しました。少し待ってからもう一度実行してください：\n" + r.stdout + r.stderr)
+        return
     if git("diff", "--cached", "--quiet").returncode != 0:
         r = git("commit", "-m", f"署名の更新 {date.today().isoformat()}")
         if r.returncode != 0:

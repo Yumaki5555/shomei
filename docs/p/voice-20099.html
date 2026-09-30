@@ -67,7 +67,7 @@ footer{font-size:.78rem;color:var(--sub);margin-top:20px}
 <body>
 <div class="wrap">
 <a class="back" href="../">← 署名の一覧（署名掲示板）</a>
-<div class="meta"><span class="tag" style="background:#b45309">移民・外国人政策</span><span class="cat">富山</span><span class="left" id="left" hidden></span></div>
+<div class="meta"><span class="pick">⭐おすすめ</span><span class="tag" style="background:#b45309">移民・外国人政策</span><span class="cat">富山</span><span class="left" id="left" hidden></span></div>
 <h1>富山県の多文化共生条例の素案を、県民の不安に向き合う形へ見直してください。 暮らしの安心を後回しにしたまま進めないでください。県民が納得できる説明と修正が必要です。</h1>
 <img class="shot" src="../img/voice-20099.jpg" alt="署名ページの画面" loading="lazy">
 <div class="countbox"><span><small>賛同者</small> <b>38</b> 人</span><span class="grow">前回（9/29）から +2人</span></div>
@@ -125,7 +125,7 @@ if (end) {
   left.textContent = dl < 0 ? '終了' : dl === 0 ? '本日終了' : `あと${dl}日`;
   if (dl <= 14) left.classList.add('urgent');
 }
-document.getElementById('share').onclick = () => shareX("✍️【署名募集中】（2026/10/23まで）\n\n「富山県の多文化共生条例の素案を、県民の不安に向き合う形へ見直してください。 暮らしの安心を後回しにしたま…」\n\nいま38人が賛同しています。\nあなたも一筆を🙏\n#署名 #移民政策\n\nhttps://voice.charity/events/20099");
+document.getElementById('share').onclick = () => shareX("⭐【おすすめ署名】（2026/10/23まで）\n\n「富山県の多文化共生条例の素案を、県民の不安に向き合う形へ見直してください。 暮らしの安心を後回しにしたま…」\n\nいま38人が賛同しています。\nあなたも一筆を🙏\n#署名 #移民政策\n\nhttps://voice.charity/events/20099");
 
 const SIGNED_KEY = 'shomei-signed';
 function loadSigned(){ try { return JSON.parse(localStorage.getItem(SIGNED_KEY) || '{}') || {}; } catch (e) { return {}; } }
