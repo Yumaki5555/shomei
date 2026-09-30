@@ -194,6 +194,8 @@ def main():
         "__SITE_DESC__": html.escape(config["site_description"]),
         "__SITE_URL__": html.escape(config["site_url"]),
         "__COUNT__": str(len(items)),
+        "__UPDATED_JP__": html.escape(ymd_jp(data.get("updated", ""))),
+        "__UPDATE_NOTE__": html.escape(config.get("update_note", "")),
         "__CHARA_ALL__": html.escape(chara_all),
         "__OG_IMAGE__": f'<meta property="og:image" content="{html.escape(config["site_url"] + chara_all)}">' if chara_all else "",
         "__SIGNED_JS__": SIGNED_JS,
@@ -448,6 +450,10 @@ h1{font-size:1.6rem;margin:0 0 4px;letter-spacing:.02em}
 .lead{color:var(--sub);margin:0 0 12px;font-size:.95rem}
 .stats{display:flex;gap:10px;flex-wrap:wrap;font-size:.85rem;color:var(--sub)}
 .stats b{color:var(--ink);font-size:1.1rem}
+.updated{display:inline-flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;background:var(--card);border:2px solid var(--accent);border-radius:12px;padding:8px 16px;margin:4px 0 10px}
+.u-label{font-weight:700;color:var(--accent);font-size:.95rem}
+.u-date{font-size:1.45rem;letter-spacing:.02em}
+.u-note{color:var(--sub);font-size:.85rem}
 .filters{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0;border-bottom:1px solid var(--line)}
 .tagbar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
 .tagbtn{border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:5px 12px;font-size:.88rem;cursor:pointer;font-family:inherit}
@@ -492,7 +498,8 @@ footer{font-size:.8rem;color:var(--sub);padding:20px 0 40px;border-top:1px solid
   <p style="font-size:.85rem;margin:0 0 10px"><a href="posts.html">📣 X投稿文ページ</a></p>
   <h1>✍️ __SITE_NAME__</h1>
   <p class="lead">__SITE_DESC__</p>
-  <div class="stats"><span>掲載中 <b>__COUNT__</b> 件</span><span id="mine"></span><span id="updated"></span></div>
+  <div class="updated"><span class="u-label">📅 最終更新日</span><b class="u-date">__UPDATED_JP__</b><span class="u-note">__UPDATE_NOTE__</span></div>
+  <div class="stats"><span>掲載中 <b>__COUNT__</b> 件</span><span id="mine"></span></div>
   <div class="intro">
     <div class="notice" role="note">
       <b class="h">⚠️ 署名する前にご確認ください</b>
@@ -582,7 +589,6 @@ document.getElementById('hideSigned').onchange = e => { state.hideSigned = e.tar
 document.getElementById('q').oninput = e => { state.q = e.target.value.trim(); render(); };
 document.getElementById('pref').onchange = e => { state.pref = e.target.value; render(); };
 document.getElementById('sort').onchange = e => { state.sort = e.target.value; render(); };
-if (D.updated) document.getElementById('updated').textContent = '署名数の確認日：' + D.updated;
 
 const sorters = {
   count: (a, b) => (b.count || 0) - (a.count || 0),

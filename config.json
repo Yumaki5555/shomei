@@ -5,6 +5,7 @@
   "site_url": "https://yumaki5555.github.io/shomei/",
   "main_hashtag": "#署名",
   "urgent_days": 14,
+  "update_note": "更新頻度：週１程度",
   "_min_start_date_説明": "この日より前に始まった署名は候補に入れません（開始日がわからない署名は入れます）",
   "min_start_date": "2021-01-01",
   "chara_all": "１筆でも.png",

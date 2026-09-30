@@ -17,7 +17,7 @@ from build import HERE, SHARE_JS, growth, load_config, load_data, published_item
 LIMIT = 140        # 投稿文の上限（リンク込みで140字）
 URL_WEIGHT = 23    # X ではリンクはどんな長さでも23字として数えられる
 RISING_TOP = 5     # 「最近伸びている」に出す件数
-NEW_DAYS = 20      # 見つけてから何日以内を「新着」とするか（月2回の実行に合わせる）
+NEW_DAYS = 8       # 見つけてから何日以内を「新着」とするか（週1回の実行に合わせる）
 
 
 def length(text):
