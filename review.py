@@ -2,15 +2,19 @@
 
 使い方:  python review.py
   → ブラウザが開きます。「載せる」「載せない」「⭐おすすめ」を押すと、その場で data.json に保存されます。
+  → 自分で見つけた署名は、画面上の欄にURLを貼って「追加」を押すと「掲載」で加わります。
   → 終わったら、この黒い画面で Ctrl + C を押して閉じてください。
 """
 import json
 import threading
+from datetime import date
 import webbrowser
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-from collect import DATA_PATH, PREFS, load_json, save_json
+import requests
+
+from collect import DATA_PATH, PREFS, fetch_by_url, load_json, new_item, save_json
 
 HERE = Path(__file__).parent
 PORT = 8765
@@ -94,6 +98,44 @@ def apply_update(body):
         return changed + [p for p in picks if p not in changed]
 
 
+MANUAL = "手動で追加"  # 自分で見つけて追加した署名に付けるキーワード
+
+
+def add_by_url(body):
+    """URLから署名を読み取り、「掲載」として data.json に加える。(結果のメッセージ, 署名) を返す。"""
+    try:
+        base = fetch_by_url(body.get("url", ""))
+    except ValueError as e:
+        return str(e), None
+    except requests.RequestException:
+        return "署名ページを読み込めませんでした。URLが正しいか、ネットにつながっているか確認してください。", None
+    tag = body.get("tag") if isinstance(body.get("tag"), str) else ""
+    with lock:
+        data = load_json(DATA_PATH, {"items": {}})
+        it = data["items"].get(base["id"])
+        if it:
+            if it["status"] == "掲載":
+                return "この署名はもう「掲載」になっています。", it
+            if base["ended"]:
+                return "この署名はもう終了しているため、載せられません。", None
+            msg = f"もともと「{it['status']}」だった署名を「掲載」にしました。"
+            it["status"] = "掲載"
+        else:
+            if base["ended"]:
+                return "この署名はもう終了しているため、載せられません。", None
+            it = new_item(base, None, MANUAL, tag, date.today().isoformat())
+            it["status"] = "掲載"
+            data["items"][it["id"]] = it
+            msg = "追加して「掲載」にしました。"
+        if MANUAL not in it["keywords"]:
+            it["keywords"].append(MANUAL)
+        it["tags"] = [t for t in it["tags"] if t]
+        if tag and tag not in it["tags"]:
+            it["tags"].append(tag)
+        save_json(DATA_PATH, data)
+        return msg, it
+
+
 class Handler(BaseHTTPRequestHandler):
     def log_message(self, *args):
         pass  # 画面に通信の記録を出さない
@@ -126,13 +168,17 @@ class Handler(BaseHTTPRequestHandler):
             self.send(404, "not found", "text/plain")
 
     def do_POST(self):
-        if self.path != "/api/update":
+        if self.path not in ("/api/update", "/api/add"):
             self.send(404, "not found", "text/plain")
             return
         length = int(self.headers.get("Content-Length", 0))
         body = json.loads(self.rfile.read(length) or b"{}")
-        changed = apply_update(body)
-        self.send(200, json.dumps(changed, ensure_ascii=False), "application/json; charset=utf-8")
+        if self.path == "/api/add":
+            msg, it = add_by_url(body)
+            result = {"msg": msg, "item": it}
+        else:
+            result = apply_update(body)
+        self.send(200, json.dumps(result, ensure_ascii=False), "application/json; charset=utf-8")
 
 
 PAGE = r"""<!DOCTYPE html>
@@ -179,10 +225,22 @@ h1{font-size:1.3rem;margin:20px 0 4px}
 .more{display:block;margin:16px auto;padding:10px 24px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;font-family:inherit}
 .toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 16px;border-radius:8px;font-size:.9rem;opacity:0;transition:opacity .2s}
 .toast.show{opacity:1}
+.add{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:10px 0}
+.add b{font-size:.9rem}
+.add input,.add select{padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font-family:inherit;font-size:.9rem;min-width:0}
+.add input{flex:1 1 260px}
+.add button{border:0;border-radius:8px;padding:7px 16px;font-weight:700;cursor:pointer;font-family:inherit;background:var(--ok);color:#fff}
+.add button:disabled{opacity:.5;cursor:wait}
 </style></head>
 <body><div class="wrap">
 <h1>✍️ 署名の選別（自分用の画面）</h1>
 <p class="help">「載せる」を押した署名だけが公開ページに出ます。押すとすぐ保存されます。終わったら黒い画面で Ctrl + C を押して閉じてください。</p>
+<form class="add" id="add">
+  <b>自分で見つけた署名を追加：</b>
+  <input id="addUrl" type="url" required placeholder="change.org か Voice の署名ページのURLを貼る">
+  <select id="addTag"><option value="">タグ（あとで選んでもOK）</option></select>
+  <button type="submit">追加</button>
+</form>
 <div class="bar">
   <div class="tabs" id="tabs"></div>
   <div class="row">
@@ -289,8 +347,32 @@ document.getElementById('list').addEventListener('change', e => {
   if (e.target.matches('[data-pref]')) update([c.dataset.id], {pref: e.target.value}, '地域を保存しました');
 });
 
+document.getElementById('add').onsubmit = async e => {
+  e.preventDefault();
+  const btn = e.target.querySelector('button'), url = document.getElementById('addUrl').value.trim();
+  btn.disabled = true; btn.textContent = '読み込み中…';
+  try {
+    const r = await fetch('/api/add', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({url, tag: document.getElementById('addTag').value})});
+    const {msg, item} = await r.json();
+    if (!item) { alert(msg); return; }
+    const i = D.items.findIndex(x => x.id === item.id);
+    if (i < 0) D.items.push(item); else D.items[i] = item;
+    // 追加した署名だけが見えるようにする
+    state.status = '掲載'; state.kw = ''; state.q = item.title; state.shown = 40;
+    document.getElementById('q').value = item.title; document.getElementById('kw').value = '';
+    if (![...document.getElementById('kw').options].some(o => o.value === '手動で追加')) {
+      const o = document.createElement('option'); o.value = o.textContent = '手動で追加'; document.getElementById('kw').appendChild(o);
+    }
+    document.getElementById('addUrl').value = '';
+    render(); toast(msg);
+  } catch (err) {
+    alert('追加できませんでした。黒い画面にエラーが出ていないか確認してください。');
+  } finally { btn.disabled = false; btn.textContent = '追加'; }
+};
+
 fetch('/api/data').then(r => r.json()).then(d => {
   D = d;
+  D.tags.forEach(t => { const o = document.createElement('option'); o.value = o.textContent = t; document.getElementById('addTag').appendChild(o); });
   [...new Set(D.items.flatMap(i => i.keywords))].sort().forEach(k => {
     const o = document.createElement('option'); o.value = o.textContent = k; document.getElementById('kw').appendChild(o);
   });

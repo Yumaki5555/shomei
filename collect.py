@@ -251,6 +251,58 @@ def fetch_change_org_detail(url):
     return {"count": count, "goal": goal, "ended": ended}
 
 
+def fetch_change_org_petition(url):
+    """change.orgの署名ページ1件から、data.json に保存するのに必要な情報をまとめて読む（手で追加する用）。"""
+    r = requests.get(url, headers=REQ_HEADERS, timeout=20)  # chng.it の短いURLも転送先までたどる
+    r.raise_for_status()
+    t = r.text
+    key = '"pageData":{"petition":'
+    i = t.find(key)
+    if i < 0:
+        raise ValueError("change.orgの署名ページではないようです")
+    p, _ = json.JSONDecoder().raw_decode(t, i + len(key))
+    sig = (p.get("signatureState") or {})
+    count = (sig.get("signatureCount") or {}).get("total")
+    goal = (sig.get("signatureGoal") or {}).get("displayed")
+    photo = ((p.get("photo") or {}).get("petitionLarge") or {}).get("url") or ""
+    if photo.startswith("//"):
+        photo = "https:" + photo
+    user = p.get("user") or {}
+    org = p.get("organization") or {}
+    dms = (p.get("dmsWithLegislativeBodiesConnection") or {}).get("nodes") or []
+    target = "、".join(n.get("displayName") or n.get("name") or "" for n in dms if isinstance(n, dict)).strip("、")
+    return {
+        "id": f"change:{p['id']}",
+        "site": "Change",
+        "url": change_org_petition_url(p.get("slug", "")),
+        "title": clean_text(p.get("displayTitle") or p.get("ask")),
+        "summary": clean_text(p.get("descriptionStripped") or p.get("description"), 150),
+        "starter": org.get("name") or user.get("displayName") or "",
+        "target": target,
+        "start": (p.get("createdAt") or "")[:10],
+        "end": "",
+        "goal": goal,
+        "photo": photo.split("?")[0],
+        "count": count,
+        "ended": p.get("status") != "PUBLISHED" or bool(p.get("victoryDate")),
+    }
+
+
+def fetch_by_url(url):
+    """change.org か Voice の署名ページのURLから、署名の情報を読む。"""
+    url = url.strip()
+    m = re.search(r"voice\.charity/events/(\d+)", url)
+    if m:
+        d = fetch_voice_detail(m.group(1))
+        d.update({"id": f"voice:{m.group(1)}", "site": "Voice"})
+        return d
+    if re.search(r"(change\.org|chng\.it)/", url):
+        if not url.startswith("http"):
+            url = "https://" + url
+        return fetch_change_org_petition(url)
+    raise ValueError("change.org か Voice（voice.charity）の署名ページのURLを入れてください")
+
+
 # ---------------------------------------------------------------------------
 # Voice
 # ---------------------------------------------------------------------------
