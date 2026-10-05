@@ -297,7 +297,7 @@ function card(i){
     ${img ? `<img src="${esc(img)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : '<div class="noimg">画像なし</div>'}
     <div>
       ${rank}
-      <h2><a href="${esc(i.url)}" target="_blank" rel="noopener">${esc(i.title)}</a></h2>
+      <h2><a href="${esc(i.url)}" target="_blank" rel="noopener noreferrer">${esc(i.title)}</a></h2>
       <div class="meta"><span class="st">${esc(i.status)}</span><span>${i.site === 'Change' ? 'change.org' : 'Voice'}</span>
         <span>賛同 <b>${latest(i).toLocaleString()}</b> 人</span>
         ${i.start ? `<span>開始 ${esc(i.start)}</span>` : ''}${i.end ? `<span>終了 ${esc(i.end)}</span>` : ''}
