@@ -2,6 +2,7 @@
 
 - docs/index.html   … 一覧ページ
 - docs/p/番号.html  … 1件ごとのまとめページ（スクショ・署名数の推移グラフつき）
+- docs/sites.html   … 署名サイト（Voice と change.org）の違いの説明ページ
 
 載せるのは「掲載」になっている署名だけ（「候補」「非掲載」「終了」は載せない）。
 
@@ -207,6 +208,7 @@ def main():
     OUT_DIR.mkdir(exist_ok=True)
     (OUT_DIR / "index.html").write_text(page, encoding="utf-8")
     (OUT_DIR / ".nojekyll").write_text("", encoding="utf-8")
+    build_sites_page(config)
     print(f"docs/index.html を作りました（掲載 {len(items)} 件）")
 
 
@@ -495,7 +497,7 @@ footer{font-size:.8rem;color:var(--sub);padding:20px 0 40px;border-top:1px solid
 <body>
 <div class="wrap">
 <header>
-  <p style="font-size:.85rem;margin:0 0 10px"><a href="posts.html">📣 X投稿文ページ</a></p>
+  <p style="font-size:.85rem;margin:0 0 10px"><a href="posts.html">📣 X投稿文ページ</a>　<a href="sites.html">🔍 署名サイトの違い（Voice と change.org）</a></p>
   <h1>✍️ __SITE_NAME__</h1>
   <p class="lead">__SITE_DESC__</p>
   <div class="updated"><span class="u-label">📅 最終更新日</span><b class="u-date">__UPDATED_JP__</b><span class="u-note">__UPDATE_NOTE__</span></div>
@@ -507,6 +509,7 @@ footer{font-size:.8rem;color:var(--sub);padding:20px 0 40px;border-top:1px solid
         <li>このページでは、change.org と Voice の2つの署名サイトをキーワードで検索し、その中から運営者が選んだ署名を載せています。内容を保証するものではありません。</li>
         <li>署名する前に、必ず<b>概要</b>と<b>発起人</b>を確認してください。</li>
         <li>change.org の署名については、内容をよく確かめたうえで、ご自身で判断してください。</li>
+        <li>2つのサイトの違い（支援金の行き先など）は <a href="sites.html">署名サイトの違い</a> をご覧ください。</li>
       </ul>
     </div>
     <figure class="chara"><img id="chara" src="__CHARA_ALL__" alt="しょめたん（署名をあつめる妖精）" width="800" height="533"></figure>
@@ -654,6 +657,145 @@ document.getElementById('list').addEventListener('click', e => {
 </body>
 </html>
 """
+
+SITES_TEMPLATE = r"""<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>署名サイトの違い（Voice と change.org）｜__SITE_NAME__</title>
+<meta name="description" content="署名サイト Voice と change.org の違い（運営会社・特徴・支援金の使われ方）をわかりやすく整理しました。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="署名サイトの違い（Voice と change.org）">
+<meta property="og:description" content="Voice と change.org の違いを、運営会社・特徴・支援金の使われ方で比べました。">
+<meta property="og:url" content="__SITE_URL__sites.html">
+<meta property="og:image" content="__SITE_URL__sites-compare.webp">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✍️</text></svg>">
+<style>
+""" + BASE_CSS + r"""
+:root{--voice:#e11d48;--voice-bg:#fff1f3;--change:#ca8a04;--change-bg:#fffbea}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--voice:#fb7185;--voice-bg:#2e1a20;--change:#facc15;--change-bg:#2d2914}}
+.wrap{max-width:860px;margin:0 auto;padding:0 16px 40px}
+.back{display:inline-block;margin:18px 0 6px;font-size:.88rem}
+h1{font-size:1.5rem;margin:6px 0 4px}
+.lead{color:var(--sub);margin:0 0 6px;font-size:.95rem}
+.asof{color:var(--sub);font-size:.8rem;margin:0 0 16px}
+h2{font-size:1.15rem;margin:30px 0 10px;padding-bottom:4px;border-bottom:2px solid var(--line)}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:640px){.cols{grid-template-columns:1fr}}
+.site{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.site h3{margin:0;padding:10px 14px;font-size:1.1rem;color:#fff}
+.site h3 small{display:block;font-size:.8rem;font-weight:400;opacity:.95}
+.site.voice h3{background:var(--voice)}
+.site.change h3{background:var(--change);color:#1c1b19}
+.site dl{margin:0;padding:6px 14px 12px}
+.site dt{font-size:.78rem;color:var(--sub);margin-top:8px}
+.site dd{margin:0;font-size:.92rem}
+.site ul{margin:2px 0 0;padding-left:1.2em}
+.box{border-radius:12px;padding:12px 16px;font-size:.92rem}
+.box.voice{background:var(--voice-bg);border:1.5px solid var(--voice)}
+.box.change{background:var(--change-bg);border:1.5px solid var(--change)}
+.box h3{margin:0 0 6px;font-size:1rem}
+.box ul{margin:0;padding-left:1.2em}
+.box li{margin:3px 0}
+.point{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px;font-size:.92rem}
+.point ul{margin:0;padding-left:1.2em}
+.point li{margin:4px 0}
+ol.steps{margin:0;padding-left:1.4em;font-size:.92rem}
+ol.steps li{margin:4px 0}
+figure.zu{margin:0}
+figure.zu img{width:100%;height:auto;display:block;border-radius:12px;border:1px solid var(--line)}
+figure.zu figcaption{font-size:.8rem;color:var(--sub);margin-top:4px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<a class="back" href="./">← 署名の一覧（__SITE_NAME__）</a>
+<h1>署名サイトの違い</h1>
+<p class="lead">このページに載せている署名は、<b>Voice</b> と <b>change.org</b> の2つのサイトのものです。<br>どちらも「ネットで署名を集めるサイト」ですが、運営している会社や、お金（支援金）の使われ方が違います。</p>
+<p class="asof">※2026年10月時点の、各サイトの公式情報をもとにまとめています。</p>
+<figure class="zu"><a href="sites-compare.webp" target="_blank" rel="noopener"><img src="sites-compare.webp" alt="Voice と change.org の比較図" width="1225" height="972"></a><figcaption>図を押すと大きく表示されます。下に同じ内容を文章でも書いています。</figcaption></figure>
+
+<h2>ひと目でわかる違い</h2>
+<div class="cols">
+  <section class="site voice">
+    <h3>📣 Voice<small>声で、社会を動かす。</small></h3>
+    <dl>
+      <dt>運営会社</dt><dd>Voice株式会社（日本の会社）</dd>
+      <dt>本社</dt><dd>東京都渋谷区</dd>
+      <dt>サービス開始</dt><dd>2020年</dd>
+      <dt>主に使っている人</dt><dd>日本国内の個人・団体</dd>
+      <dt>特徴</dt><dd><ul>
+        <li>日本の社会の問題に特化</li>
+        <li>署名だけでなく、意見の投稿もできる</li>
+        <li>役所やメディアに届けた実績がある</li>
+      </ul></dd>
+    </dl>
+  </section>
+  <section class="site change">
+    <h3>🌐 change.org<small>世界中の人々の力で、変化を起こす。</small></h3>
+    <dl>
+      <dt>運営会社</dt><dd>Change.org, Inc.（アメリカの会社）</dd>
+      <dt>本社</dt><dd>アメリカ・カリフォルニア州サンフランシスコ</dd>
+      <dt>サービス開始</dt><dd>2007年</dd>
+      <dt>主に使っている人</dt><dd>世界中の個人・団体（日本からも使えます）</dd>
+      <dt>特徴</dt><dd><ul>
+        <li>世界最大級の署名サイト</li>
+        <li>世界中の署名活動を作ったり、応援したりできる</li>
+        <li>英語を中心に、いろいろな言語に対応</li>
+      </ul></dd>
+    </dl>
+  </section>
+</div>
+
+<h2>💗 支援金（お金での応援）の違い</h2>
+<p style="font-size:.92rem;margin:0 0 10px">どちらのサイトも、署名のあとに「お金で応援しませんか」という画面が出ることがあります。<b>お金を払わなくても、署名だけで参加できます。</b>ただし、払ったお金の行き先が違います。</p>
+<div class="cols">
+  <div class="box voice">
+    <h3>Voice の「エール」</h3>
+    <ul>
+      <li>寄付は「エール」として署名ページに表示されます。</li>
+      <li>集まったエールは、<b>署名を始めた人（発起人）</b>に届きます（手数料を引いた額）。</li>
+      <li>受け取ったお金は、活動の宣伝・調査・イベントなどに使えます。</li>
+      <li>エールは任意で、署名だけの参加もできます。</li>
+    </ul>
+  </div>
+  <div class="box change">
+    <h3>change.org の支援金（寄付）</h3>
+    <ul>
+      <li>お金は署名を始めた人ではなく、<b>change.org（運営会社）</b>に支払われます。</li>
+      <li>集まったお金は、change.org の運営や、ほかのキャンペーンの応援に使われます。</li>
+      <li>署名を始めた人が、個別に受け取ることはできません。</li>
+      <li>寄付は任意で、署名だけの参加もできます。</li>
+    </ul>
+  </div>
+</div>
+
+<h2>✅ 署名するときのポイント</h2>
+<div class="point"><ul>
+  <li><b>お金を払わなくても署名は有効です。</b>支払い画面が出ても、そのまま閉じてかまいません。</li>
+  <li>「署名を始めた人を直接応援したい」なら、change.org の支援金ではその人には届かない点に注意しましょう。</li>
+  <li>どちらのサイトでも、署名する前に<b>概要</b>と<b>発起人</b>を確かめて、ご自身で判断してください。</li>
+</ul></div>
+
+<p style="margin-top:28px"><a class="back" href="./">← 署名の一覧にもどる</a></p>
+</div>
+</body>
+</html>
+"""
+
+
+def build_sites_page(config):
+    """署名サイトの違いを説明するページ docs/sites.html を作る。"""
+    page = SITES_TEMPLATE
+    for key, value in {
+        "__SITE_NAME__": html.escape(config["site_name"]),
+        "__SITE_URL__": html.escape(config["site_url"]),
+    }.items():
+        page = page.replace(key, value)
+    (OUT_DIR / "sites.html").write_text(page, encoding="utf-8")
+
 
 if __name__ == "__main__":
     main()
