@@ -293,13 +293,15 @@ def build_summary_pages(items, tag_defs, config, hashtag_of):
 
 
 BASE_CSS = r"""
-:root{--bg:#f6f5f2;--card:#fff;--ink:#1c1b19;--sub:#5f5c56;--line:#e3e0d9;--accent:#1d4ed8;--urgent:#dc2626;--urgent-bg:#fef2f2;--chip:#efede8;--pick:#b45309;--pick-bg:#fff7e0;--up:#15803d}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16161a;--card:#202026;--ink:#ecebe8;--sub:#a8a59f;--line:#34343c;--accent:#7aa2ff;--urgent:#f87171;--urgent-bg:#3a1e1e;--chip:#2c2c33;--pick:#fbbf24;--pick-bg:#3a3020;--up:#4ade80}}
+:root{--bg:#f6f5f2;--card:#fff;--ink:#1c1b19;--sub:#5f5c56;--line:#e3e0d9;--accent:#1d4ed8;--urgent:#dc2626;--urgent-bg:#fef2f2;--chip:#efede8;--pick:#b45309;--pick-bg:#fff7e0;--up:#15803d;--sv-bg:#fecdd3;--sv-ink:#9f1239;--sc-bg:#fef08a;--sc-ink:#713f12}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16161a;--card:#202026;--ink:#ecebe8;--sub:#a8a59f;--line:#34343c;--accent:#7aa2ff;--urgent:#f87171;--urgent-bg:#3a1e1e;--chip:#2c2c33;--pick:#fbbf24;--pick-bg:#3a3020;--up:#4ade80;--sv-bg:#4c1d2a;--sv-ink:#fda4af;--sc-bg:#423d10;--sc-ink:#fde047}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:"Hiragino Sans","Noto Sans JP","Yu Gothic UI","Meiryo",sans-serif;line-height:1.6}
 a{color:var(--accent)}
 .tag{color:#fff;padding:1px 8px;border-radius:6px;font-weight:600}
 .cat{background:var(--chip);padding:1px 8px;border-radius:6px;color:var(--sub)}
+.cat.voice{background:var(--sv-bg);color:var(--sv-ink)}
+.cat.change{background:var(--sc-bg);color:var(--sc-ink)}
 .pick{background:var(--pick-bg);color:var(--pick);padding:1px 8px;border-radius:6px;font-weight:700;border:1px solid var(--pick)}
 .left{font-weight:700;padding:1px 8px;border-radius:6px;background:var(--chip);color:var(--ink)}
 .left.urgent{background:var(--urgent-bg);color:var(--urgent)}
@@ -633,7 +635,7 @@ function render(){
     return `<li class="item${i.pick ? ' picked' : ''}${done ? ' signed' : ''}" style="${first ? '--tagc:' + tagColor[first] : ''}">
       <div class="meta">${done ? '<span class="signedmark">✅署名済み</span>' : ''}${i.pick ? '<span class="pick">⭐おすすめ</span>' : ''}${left}
         ${i.tags.map(t => `<span class="tag" style="background:${tagColor[t]}">${esc(t)}</span>`).join('')}
-        ${i.pref ? `<span class="cat">${esc(i.pref)}</span>` : ''}<span class="cat">${i.site === 'Change' ? 'change.org' : 'Voice'}</span></div>
+        ${i.pref ? `<span class="cat">${esc(i.pref)}</span>` : ''}${i.site === 'Change' ? '<span class="cat change">change.org</span>' : '<span class="cat voice">Voice</span>'}</div>
       <h2><a href="${esc(i.page)}">${esc(i.title)}</a></h2>
       ${who ? `<p class="who">${who}</p>` : ''}
       <p class="num">賛同 <b>${num(i.count)}</b> 人 ${i.grow > 0 ? `<span class="grow">（${md(i.growFrom)}から +${num(i.grow)}）</span>` : ''}</p>
