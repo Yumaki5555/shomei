@@ -3,6 +3,8 @@
 - docs/index.html   … 一覧ページ
 - docs/p/番号.html  … 1件ごとのまとめページ（スクショ・署名数の推移グラフつき）
 - docs/sites.html   … 署名サイト（Voice と change.org）の違いの説明ページ
+- docs/style.css    … すべてのページで共通の見た目（色・文字・ボタン）
+- docs/illust/      … しょめたんのイラスト（illust.py が元の絵から切り抜く）
 
 載せるのは「掲載」になっている署名だけ（「候補」「非掲載」「終了」は載せない）。
 
@@ -13,6 +15,9 @@ import html
 import json
 from datetime import date
 from pathlib import Path
+
+import illust
+from collect import PREFS
 
 HERE = Path(__file__).parent
 OUT_DIR = HERE / "docs"
@@ -40,6 +45,12 @@ def latest_count(it):
     return c[-1][1] if c else None
 
 
+def latest_count_date(it):
+    """いちばん新しい署名数を確認した日。記録が無ければ空文字。"""
+    c = sorted_counts(it)
+    return c[-1][0] if c else ""
+
+
 def growth(it):
     """前回の記録からの増え方。(増えた人数, 前回の日付, 1日あたり) または None。"""
     c = sorted_counts(it)
@@ -63,9 +74,19 @@ def image_of(it):
     return it.get("image") or it.get("photo") or ""
 
 
+def site_label(it):
+    return "change.org" if it["site"] == "Change" else "Voice"
+
+
 def md(iso):
     d = date.fromisoformat(iso)
     return f"{d.month}/{d.day}"
+
+
+def md_jp(iso):
+    """「2026-10-05」→「10月5日」。"""
+    d = date.fromisoformat(iso)
+    return f"{d.month}月{d.day}日"
 
 
 def ymd_jp(iso):
@@ -120,6 +141,31 @@ function toggleSigned(id){
 }
 """
 
+# 「ページの上へ」ボタンと、短いお知らせ（トースト）。どのページでも同じものを使う。
+COMMON_JS = r"""
+(function(){
+  // ページ下の帯が見えているあいだは隠す（帯の中の「上へ戻る」と重ならないように）
+  const b = document.getElementById('totop'), f = document.querySelector('.footer');
+  if (!b) return;
+  let atFooter = false;
+  const paint = () => b.classList.toggle('show', scrollY > 600 && !atFooter);
+  if (f && 'IntersectionObserver' in window) new IntersectionObserver(es => { atFooter = es[0].isIntersecting; paint(); }).observe(f);
+  addEventListener('scroll', paint, { passive: true });
+})();
+function toast(msg){
+  const t = document.getElementById('toast'); if (!t) return;
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('show'), 2000);
+}
+"""
+
+# 外部サイトへのリンクにつける印（四角から矢印が出るマーク）
+EXT_ICON = ('<svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" '
+            'd="M14 3h7v7h-2V6.41l-8.29 8.3-1.42-1.42L17.59 5H14V3zM5 5h6v2H5v12h12v-6h2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/></svg>')
+
+FAVICON = ("<link rel=\"icon\" href=\"data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'>"
+           "<text y='.9em' font-size='90'>✍️</text></svg>\">")
+
 CHARA_SRC = HERE / "しょめたん"
 CHARA_OUT = OUT_DIR / "chara"
 
@@ -152,6 +198,50 @@ def chara_path(filename):
     return f"chara/{name}"
 
 
+def illust_img(root, name, alt, cls="", loading="lazy"):
+    """docs/illust/ のイラストの <img>。大きさを書いておき、読みこみ中にページがずれないようにする。"""
+    w, h = illust.size_of(name)
+    c = f' class="{cls}"' if cls else ""
+    return (f'<img{c} src="{root}illust/{name}.webp" alt="{html.escape(alt)}" width="{w}" height="{h}"'
+            f' loading="{loading}" decoding="async">')
+
+
+def page_head(root):
+    """どのページにも入れる、共通の見た目（style.css）とアイコン。"""
+    return f'<link rel="stylesheet" href="{root}style.css?v={CSS_VER}">\n{FAVICON}'
+
+
+def topbar(root, site_name, on_top=False):
+    """ページ上の帯（サイト名と、よく使うページへのリンク）。"""
+    top = root or "./"
+    home = "" if on_top else top
+    return f"""<header class="topbar"><div class="wrap">
+<a class="logo" href="{top}"><img src="{root}illust/icon.webp" alt="" width="40" height="40">{html.escape(site_name)}</a>
+<nav class="nav" aria-label="サイト内のリンク"><a href="{home}#search">さがす</a><a href="{home}#howto">署名のしかた</a><a href="{home}#notes">注意事項</a><a href="{root}sites.html">サイトの違い</a></nav>
+</div></header>"""
+
+
+def footer(root, on_top=False):
+    """ページ下の帯（出典・注意・リンク）と「上へ」ボタン。"""
+    top = root or "./"
+    home = "" if on_top else top
+    return f"""<footer class="footer"><div class="wrap">
+<ul class="footer-links">
+  <li><a href="{top}">署名の一覧</a></li>
+  <li><a href="{home}#howto">署名のしかた</a></li>
+  <li><a href="{home}#notes">注意事項</a></li>
+  <li><a href="{root}sites.html">署名サイトの違い（Voice と change.org）</a></li>
+  <li><a href="{root}posts.html">📣 X投稿文ページ</a></li>
+</ul>
+<p>出典：<a href="https://www.change.org/" target="_blank" rel="noopener">change.org</a>・<a href="https://voice.charity/" target="_blank" rel="noopener">Voice</a> の公開情報。
+署名数は当サイトが確認した日の人数で、最新の人数とは異なる場合があります。必ず署名ページで内容をご確認ください。</p>
+<p>この掲示板に載っていても、署名の内容に賛成・保証するものではありません。</p>
+<p class="footer-top"><a class="btn btn-sub" href="#top">↑ ページのいちばん上へ戻る</a></p>
+</div></footer>
+<a class="totop" id="totop" href="#top" aria-label="ページのいちばん上へ戻る"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 5.6 4.3 13.3l1.4 1.4L11 9.4V20h2V9.4l5.3 5.3 1.4-1.4z"/></svg><span>上へ</span></a>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>"""
+
+
 def main():
     config = load_config()
     data = load_data()
@@ -166,21 +256,26 @@ def main():
                 tags.append({"name": t, "color": "#6b7280", "hashtag": ""})
                 known.add(t)
 
+    illust.make_all()
+    write_css()
+
     rows = []
     for it in items:
         g = growth(it)
         rows.append({
             "id": it["id"], "site": it["site"], "url": it["url"], "title": it["title"],
+            "summary": it.get("summary", ""),
             "starter": it.get("starter", ""), "target": it.get("target", ""),
             "start": it.get("start", ""), "end": it.get("end", ""),
             "tags": it["tags"], "pref": it.get("pref", ""), "pick": bool(it.get("pick")), "rank": it.get("pick_rank") or 999,
-            "found": it.get("found", ""), "count": latest_count(it),
+            "found": it.get("found", ""), "count": latest_count(it), "countDate": latest_count_date(it),
             "grow": g[0] if g else None, "growFrom": g[1] if g else None, "rate": g[2] if g else 0,
             "page": summary_path(it), "share": share_text(it, config["main_hashtag"], hashtag_of),
         })
     build_summary_pages(items, tags, config, hashtag_of)
 
     chara_all = chara_path(config.get("chara_all", ""))
+    oops_w, oops_h = illust.size_of("oops")
     payload = {
         "updated": data.get("updated", ""),
         "items": rows,
@@ -188,17 +283,31 @@ def main():
         "charaAll": chara_all,
         "charaPick": chara_path(config.get("chara_pick", "")),
         "urgentDays": config["urgent_days"],
+        "prefs": PREFS,
+        "oops": {"src": "illust/oops.webp", "w": oops_w, "h": oops_h},
     }
     page = TEMPLATE
     for key, value in {
+        "__HEAD__": page_head(""),
+        "__TOPBAR__": topbar("", config["site_name"], on_top=True),
+        "__FOOTER__": footer("", on_top=True),
+        "__HERO_IMG__": illust_img("", "hero", "署名用紙をかかえた、しょめたん（署名をあつめる妖精）", loading="eager"),
+        "__IMG_SEARCH__": illust_img("", "search", "虫めがねで署名をさがす、しょめたん", "panel-illust"),
+        "__IMG_STEP1__": illust_img("", "search", "虫めがねで署名をさがす、しょめたん"),
+        "__IMG_STEP2__": illust_img("", "check", "署名用紙を見て「え？」と確かめる、しょめたん"),
+        "__IMG_STEP3__": illust_img("", "sign", "しょめたんの署名用紙に、鳥さんが署名しているところ"),
+        "__IMG_THANKS__": illust_img("", "thanks", "署名用紙をかかえて、よろこぶしょめたん"),
+        "__IMG_PLEASE__": illust_img("", "please", "手をあわせて「確かめてね」とおねがいする、しょめたん"),
         "__SITE_NAME__": html.escape(config["site_name"]),
         "__SITE_DESC__": html.escape(config["site_description"]),
         "__SITE_URL__": html.escape(config["site_url"]),
         "__COUNT__": str(len(items)),
-        "__UPDATED_JP__": html.escape(ymd_jp(data.get("updated", ""))),
+        # 「2026年」と「10月20日」の間でだけ折り返す
+        "__UPDATED_JP__": ymd_jp(data.get("updated", "")).replace("年", '年</span><span class="nw">', 1).join(['<span class="nw">', "</span>"]),
         "__UPDATE_NOTE__": html.escape(config.get("update_note", "")),
-        "__CHARA_ALL__": html.escape(chara_all),
         "__OG_IMAGE__": f'<meta property="og:image" content="{html.escape(config["site_url"] + chara_all)}">' if chara_all else "",
+        "__EXT_ICON__": EXT_ICON,
+        "__COMMON_JS__": COMMON_JS,
         "__SIGNED_JS__": SIGNED_JS,
         "__SHARE_JS__": SHARE_JS,
         "__DATA__": json.dumps(payload, ensure_ascii=False).replace("</", "<\\/"),
@@ -216,7 +325,7 @@ def chart_svg(it):
     """署名数の推移を、外部の部品を使わない簡単な線グラフ（SVG）にする。"""
     c = sorted_counts(it)
     if len(c) < 2:
-        return '<p class="sub">署名数の記録がたまると、ここに推移のグラフが出ます。</p>'
+        return '<p class="note">署名数の記録がたまると、ここに推移のグラフが出ます。</p>'
     W, H, L, R, T, B = 600, 220, 64, 16, 16, 34
     d0 = date.fromisoformat(c[0][0])
     span = max((date.fromisoformat(c[-1][0]) - d0).days, 1)
@@ -226,7 +335,7 @@ def chart_svg(it):
     x = lambda d: L + (date.fromisoformat(d) - d0).days / span * (W - L - R)
     y = lambda n: T + (1 - (n - lo) / (hi - lo)) * (H - T - B)
     pts = " ".join(f"{x(d):.1f},{y(n):.1f}" for d, n in c)
-    dots = "".join(f'<circle cx="{x(d):.1f}" cy="{y(n):.1f}" r="3.5"><title>{md(d)}：{n:,}人</title></circle>' for d, n in c)
+    dots = "".join(f'<circle cx="{x(d):.1f}" cy="{y(n):.1f}" r="4.5"><title>{md(d)}：{n:,}人</title></circle>' for d, n in c)
     labels = (f'<text x="{L - 6}" y="{y(hi) + 4:.1f}" text-anchor="end">{hi:,}</text>'
               f'<text x="{L - 6}" y="{y(lo) + 4:.1f}" text-anchor="end">{lo:,}</text>'
               f'<text x="{L}" y="{H - 10}">{md(c[0][0])}</text>'
@@ -245,6 +354,7 @@ def build_summary_pages(items, tag_defs, config, hashtag_of):
     color_of = {t["name"]: t["color"] for t in tag_defs}
     e = html.escape
     site_url = config["site_url"]
+    please = illust_img("../", "please", "手をあわせて「確かめてね」とおねがいする、しょめたん")
 
     for it in items:
         n = latest_count(it)
@@ -252,32 +362,43 @@ def build_summary_pages(items, tag_defs, config, hashtag_of):
         img = image_of(it)
         img_abs = img if img.startswith("http") else (site_url + img if img else "")
         img_rel = img if img.startswith("http") else ("../" + img if img else "")
+        site = site_label(it)
         facts = [("発起人", it.get("starter")), ("提出先", it.get("target")),
                  ("開始日", ymd_jp(it.get("start"))), ("終了日", ymd_jp(it.get("end"))),
                  ("目標", f"{it['goal']:,}人" if it.get("goal") else ""),
-                 ("署名サイト", it["site"] if it["site"] != "Change" else "change.org")]
+                 ("署名サイト", site)]
         facts_html = "".join(f"<dt>{e(k)}</dt><dd>{e(v)}</dd>" for k, v in facts if v)
-        grow_html = (f'<span class="grow">前回（{md(g[1])}）から +{g[0]:,}人</span>' if g and g[0] > 0 else "")
+        grow_html = (f'<span class="grow">前回（{md_jp(g[1])}）から +{g[0]:,}人</span>' if g and g[0] > 0 else "")
+        count_html = (f'<div class="countbox"><span class="k">賛同した人の数</span>'
+                      f'<span class="num">{n:,}</span> 人 <span class="when">（{ymd_jp(latest_count_date(it))} 確認）</span>'
+                      f'{grow_html}</div>') if n else ""
         desc = f"いま{n:,}人が賛同。{it.get('summary', '')}" if n else it.get("summary", "")
         replace = {
+            "__HEAD__": page_head("../"),
+            "__TOPBAR__": topbar("../", config["site_name"]),
+            "__FOOTER__": footer("../"),
+            "__PLEASE_IMG__": please,
             "__TITLE__": e(it["title"]),
-            "__PICK__": '<span class="pick">⭐おすすめ</span>' if it.get("pick") else "",
-            "__TAGS__": "".join(f'<span class="tag" style="background:{color_of.get(t, "#6b7280")}">{e(t)}</span>' for t in it["tags"]),
-            "__PREF__": f'<span class="cat">{e(it["pref"])}</span>' if it.get("pref") else "",
+            "__PICK__": '<span class="badge pick">⭐ おすすめ</span>' if it.get("pick") else "",
+            "__TAGS__": "".join(f'<span class="badge"><span class="dot" style="background:{color_of.get(t, "#6b7280")}"></span>{e(t)}</span>'
+                                for t in it["tags"]),
+            "__PREF__": f'<span class="badge">📍 {e(it["pref"])}</span>' if it.get("pref") else "",
+            "__SITEBADGE__": f'<span class="badge {"change" if it["site"] == "Change" else "voice"}">{site}</span>',
             "__IMG__": f'<img class="shot" src="{e(img_rel)}" alt="署名ページの画面" loading="lazy">' if img_rel else "",
-            "__COUNT__": f"{n:,}" if n else "—",
-            "__GROW__": grow_html,
+            "__COUNTBOX__": count_html,
             "__SUMMARY__": e(it.get("summary", "")),
             "__FACTS__": facts_html,
             "__CHART__": chart_svg(it),
             "__URL__": e(it["url"]),
-            "__SITE__": "change.org" if it["site"] == "Change" else "Voice",
+            "__SITE__": site,
+            "__EXT_ICON__": EXT_ICON,
             "__END_ISO__": e(it.get("end") or ""),
             "__SHARE__": json.dumps(share_text(it, config["main_hashtag"], hashtag_of), ensure_ascii=False).replace("</", "<\\/"),
+            "__COMMON_JS__": COMMON_JS,
             "__SHARE_JS__": SHARE_JS,
             "__SIGNED_JS__": SIGNED_JS,
             "__ID__": json.dumps(it["id"]),
-            "__CHANGE_NOTE__": ("<li>change.org はご自身で判断してください。</li>"
+            "__CHANGE_NOTE__": ("<li><b>change.org の署名です</b>内容をよく確かめたうえで、ご自身で判断してください。</li>"
                                 if it["site"] == "Change" else ""),
             "__SITE_NAME__": e(config["site_name"]),
             "__PAGE_URL__": e(site_url + summary_path(it)),
@@ -292,34 +413,272 @@ def build_summary_pages(items, tag_defs, config, hashtag_of):
         (out / page_name(it)).write_text(page, encoding="utf-8")
 
 
+# すべてのページで共通の見た目。docs/style.css に書き出す。
+# 白が基本・緑がメインの色。文字は大きめ（スマホ17px・パソコン18px）。ボタンはどれも同じ高さ・角丸・余白。
 BASE_CSS = r"""
-:root{--bg:#f6f5f2;--card:#fff;--ink:#1c1b19;--sub:#5f5c56;--line:#e3e0d9;--accent:#1d4ed8;--urgent:#dc2626;--urgent-bg:#fef2f2;--chip:#efede8;--pick:#b45309;--pick-bg:#fff7e0;--up:#15803d;--sv-bg:#fecdd3;--sv-ink:#9f1239;--sc-bg:#fef08a;--sc-ink:#713f12}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#16161a;--card:#202026;--ink:#ecebe8;--sub:#a8a59f;--line:#34343c;--accent:#7aa2ff;--urgent:#f87171;--urgent-bg:#3a1e1e;--chip:#2c2c33;--pick:#fbbf24;--pick-bg:#3a3020;--up:#4ade80;--sv-bg:#4c1d2a;--sv-ink:#fda4af;--sc-bg:#423d10;--sc-ink:#fde047}}
+:root{--green:#15803d;--green-dark:#166534;--green-deep:#14532d;--green-soft:#dcfce7;--green-pale:#f0fdf4;--green-line:#9fdcb4;
+  --ink:#1f2937;--sub:#4b5563;--line:#dfe7e2;--field:#c9d6ce;--bg:#fff;--bg-soft:#f4faf6;
+  --pick:#92400e;--pick-bg:#fff8e6;--pick-line:#f2c94c;--urgent:#b91c1c;--urgent-bg:#fef2f2;
+  --sv-bg:#ffe4e6;--sv-ink:#9f1239;--sc-bg:#fef9c3;--sc-ink:#713f12;
+  --radius:16px;--btn-h:50px;color-scheme:light}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:"Hiragino Sans","Noto Sans JP","Yu Gothic UI","Meiryo",sans-serif;line-height:1.6}
-a{color:var(--accent)}
-.tag{color:#fff;padding:1px 8px;border-radius:6px;font-weight:600}
-.cat{background:var(--chip);padding:1px 8px;border-radius:6px;color:var(--sub)}
-.cat.voice{background:var(--sv-bg);color:var(--sv-ink)}
-.cat.change{background:var(--sc-bg);color:var(--sc-ink)}
-.pick{background:var(--pick-bg);color:var(--pick);padding:1px 8px;border-radius:6px;font-weight:700;border:1px solid var(--pick)}
-.left{font-weight:700;padding:1px 8px;border-radius:6px;background:var(--chip);color:var(--ink)}
-.left.urgent{background:var(--urgent-bg);color:var(--urgent)}
-.grow{color:var(--up);font-weight:600}
-.btn{display:inline-block;border:0;cursor:pointer;font-family:inherit;text-decoration:none;border-radius:8px;padding:5px 12px;font-size:.82rem;font-weight:600}
-.btn.go{background:var(--accent);color:#fff}
-.btn.sum{background:var(--chip);color:var(--ink)}
-.btn.x{background:var(--ink);color:var(--bg)}
-.btn.done{background:var(--chip);color:var(--sub);border:1.5px dashed var(--line)}
-.btn.done.on{background:var(--up);color:#fff;border-style:solid;border-color:transparent}
-.signedmark{background:var(--up);color:#fff;padding:1px 8px;border-radius:6px;font-weight:700}
-.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:9px 18px;border-radius:10px;font-size:.92rem;opacity:0;transition:opacity .2s;pointer-events:none;z-index:9}
+[hidden]{display:none!important}
+html{font-size:106.25%;-webkit-text-size-adjust:100%;scroll-padding-top:80px}
+@media (min-width:768px){html{font-size:112.5%}}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic UI","Meiryo",sans-serif;line-height:1.75;overflow-wrap:break-word}
+img{max-width:100%;height:auto}
+a{color:var(--green-dark);text-underline-offset:.2em}
+a:hover{color:var(--green-deep)}
+:focus-visible{outline:3px solid #22c55e;outline-offset:2px}
+h1,h2,h3{line-height:1.45}
+.wrap{max-width:1120px;margin:0 auto;padding:0 16px}
+.nw{display:inline-block}
+.note{font-size:.88rem;color:var(--sub)}
+
+/* ページ上の帯 */
+.topbar{background:#fff;border-bottom:1px solid var(--line)}
+.topbar .wrap{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:0 12px;padding-top:4px;padding-bottom:4px}
+.logo{display:inline-flex;align-items:center;gap:8px;min-height:48px;font-size:1.15rem;font-weight:800;color:var(--green-deep);text-decoration:none;letter-spacing:.04em}
+.logo img{width:40px;height:40px;object-fit:contain}
+.nav{display:flex;flex-wrap:wrap;gap:2px;margin:0 -8px}
+.nav a{display:inline-flex;align-items:center;min-height:44px;padding:2px 10px;border-radius:999px;font-size:.9rem;font-weight:700;color:var(--green-dark);text-decoration:none}
+.nav a:hover{background:var(--green-pale)}
+@media (max-width:520px){
+  .nav{width:calc(100% + 12px);margin:0 -6px;justify-content:space-between}
+  .nav a{padding:2px 6px;font-size:.82rem}
+}
+@media (max-width:359px){.nav a:first-child{display:none}}
+
+/* ボタン（すべて同じ高さ・角丸・余白。色は「緑＝いちばんの行動」「白＝そのほか」の2種類だけ） */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:var(--btn-h);padding:8px 18px;border-radius:12px;border:2px solid transparent;
+  font:inherit;font-size:1rem;font-weight:700;line-height:1.35;text-align:center;text-decoration:none;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.btn-primary{background:var(--green);border-color:var(--green);color:#fff;box-shadow:0 3px 0 var(--green-deep)}
+.btn-primary:hover{background:var(--green-dark);border-color:var(--green-dark);color:#fff}
+.btn-primary:active{transform:translateY(2px);box-shadow:0 1px 0 var(--green-deep)}
+.btn-sub{background:#fff;border-color:var(--green-line);color:var(--green-dark)}
+.btn-sub:hover{background:var(--green-pale);color:var(--green-deep)}
+.btn-sub[aria-pressed="true"]{background:var(--green-soft);border-color:var(--green);color:var(--green-deep)}
+.btn:disabled{opacity:.45;cursor:default;box-shadow:none}
+.btn-block{display:flex;width:100%}
+.btn .ico{width:1.15em;height:1.15em;flex:none}
+.btn-row{display:flex;flex-wrap:wrap;gap:8px}
+.btn-row .btn{flex:1 1 0;min-width:max-content;padding-left:12px;padding-right:12px}
+.ext-note{margin:4px 0 0;font-size:.85rem;color:var(--sub);text-align:center}
+
+/* 小さなラベル（押せない印。ボタンと見分けがつくよう、枠なし・小さめ） */
+.badges{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.badge{display:inline-flex;align-items:center;gap:5px;padding:1px 10px;border-radius:8px;background:#eef3f0;color:var(--ink);font-size:.85rem;font-weight:700;line-height:1.7}
+.badge .dot{width:.7em;height:.7em;border-radius:50%;flex:none}
+.badge.pick{background:var(--pick-bg);color:var(--pick);box-shadow:inset 0 0 0 1px var(--pick-line)}
+.badge.left.urgent{background:var(--urgent-bg);color:var(--urgent)}
+.badge.signed{background:var(--green);color:#fff}
+.badge.voice{background:var(--sv-bg);color:var(--sv-ink)}
+.badge.change{background:var(--sc-bg);color:var(--sc-ink)}
+.grow{display:block;color:var(--green);font-weight:700;font-size:.9rem}
+
+/* 見出し・区切り */
+.section{padding:44px 0}
+.section.soft{background:var(--bg-soft)}
+.section-h{display:flex;align-items:center;gap:10px;margin:0 0 8px;font-size:1.5rem;color:var(--green-deep)}
+.section-h::before{content:"";flex:none;width:8px;height:1.3em;border-radius:4px;background:var(--green)}
+.section-lead{margin:0 0 20px;color:var(--sub)}
+.box{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px}
+.box h2{margin:0 0 8px;font-size:1.2rem;color:var(--green-deep)}
+
+/* 折りたたみ */
+details{background:#fff;border:1px solid var(--line);border-radius:14px;margin:10px 0}
+summary{position:relative;display:flex;align-items:center;min-height:54px;padding:10px 52px 10px 18px;font-weight:800;cursor:pointer;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"＋ ひらく";position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:.8rem;color:var(--green-dark);background:var(--green-pale);border-radius:999px;padding:2px 10px}
+details[open] summary::after{content:"－ とじる"}
+summary{padding-right:110px}
+details>div{padding:0 18px 14px}
+details>div p{margin:0 0 8px}
+details ul{margin:0 0 8px;padding-left:1.3em}
+
+/* チェックリスト（注意事項） */
+.checklist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.checklist li{position:relative;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 14px 12px 52px}
+.checklist li::before{content:"✓";position:absolute;left:14px;top:13px;display:flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:var(--green);color:#fff;font-size:.9rem;font-weight:800}
+.checklist b{display:block;color:var(--green-deep)}
+
+/* ページ下 */
+.footer{background:var(--bg-soft);border-top:1px solid var(--line);margin-top:0;padding:28px 0 40px;font-size:.9rem;color:var(--sub)}
+.footer-top{margin-top:16px!important;text-align:center}
+.footer p{margin:0 0 8px}
+.footer-links{display:flex;flex-wrap:wrap;gap:0 18px;margin:0 0 12px;padding:0;list-style:none}
+.footer-links a{display:inline-flex;align-items:center;min-height:44px;font-weight:700}
+.totop{position:fixed;right:16px;bottom:16px;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;width:58px;height:58px;border-radius:50%;
+  background:var(--green);color:#fff;font-size:.72rem;font-weight:800;line-height:1.1;text-decoration:none;box-shadow:0 4px 14px rgba(20,83,45,.35);
+  opacity:0;visibility:hidden;transform:translateY(8px);transition:opacity .2s,transform .2s,visibility .2s}
+.totop.show{opacity:1;visibility:visible;transform:none}
+.totop:hover{background:var(--green-dark);color:#fff}
+.totop svg{width:24px;height:24px}
+.toast{position:fixed;left:50%;bottom:90px;z-index:30;transform:translateX(-50%);max-width:calc(100% - 32px);padding:12px 20px;border-radius:12px;
+  background:var(--green-deep);color:#fff;font-weight:700;text-align:center;opacity:0;transition:opacity .2s;pointer-events:none}
 .toast.show{opacity:1}
-.notice{background:var(--pick-bg);border:1.5px solid var(--pick);border-radius:12px;padding:10px 14px;margin:12px 0;font-size:.88rem;line-height:1.6}
-.notice b.h{display:block;color:var(--pick);margin-bottom:2px}
-.notice ul{margin:0;padding-left:1.2em}
-.notice li{margin:2px 0}
+
+/* ===== 一覧ページ ===== */
+.hero{background:linear-gradient(180deg,var(--green-pale),#fff);padding:18px 0 30px}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1fr);justify-items:center;gap:6px;text-align:center}
+.hero h1{margin:0;font-size:2.3rem;letter-spacing:.1em;color:var(--green-deep)}
+.hero-illust{margin:0;width:min(70vw,290px)}
+.hero-illust img{display:block;width:100%;height:auto}
+.hero-text{display:flex;flex-direction:column;align-items:center;gap:14px;width:100%}
+.hero-lead{margin:0;font-size:1.4rem;font-weight:800;line-height:1.55}
+.hero-desc{margin:0;color:var(--sub)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;width:100%;max-width:640px;margin:0;padding:0;list-style:none}
+.stat{background:#fff;border:2px solid var(--green-soft);border-radius:14px;padding:10px 12px;text-align:center}
+.stat .k{display:block;font-size:.85rem;font-weight:700;color:var(--sub)}
+.stat .v{display:block;font-size:1.2rem;font-weight:800;line-height:1.45;color:var(--green-deep)}
+.stat .v b{font-size:1.9rem}
+.stat .s{display:block;font-size:.8rem;color:var(--sub)}
+.hero-btns{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;width:100%;max-width:640px}
+@media (min-width:560px){.hero-btns{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (min-width:880px){
+  .hero{padding:32px 0 40px}
+  .hero-grid{grid-template-columns:minmax(0,1fr) 330px;grid-template-areas:"title illust" "text illust";column-gap:48px;justify-items:start;text-align:left}
+  .hero h1{grid-area:title;align-self:end;font-size:3rem}
+  .hero-illust{grid-area:illust;width:100%;align-self:center}
+  .hero-text{grid-area:text;align-items:flex-start;align-self:start}
+}
+
+/* さがす */
+.search-area{padding:8px 0 36px}
+.panel{background:#fff;border:2px solid var(--green-soft);border-radius:22px;padding:18px 16px 20px;box-shadow:0 8px 24px rgba(21,128,61,.07)}
+@media (min-width:768px){.panel{padding:24px 28px 26px}}
+.panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.panel-head .section-h{margin:0}
+.panel-head p{margin:6px 0 0;color:var(--sub)}
+.panel-illust{flex:none;width:100px;height:auto}
+@media (min-width:768px){.panel-illust{width:160px}}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0;margin-top:18px}
+.field-label{font-weight:800}
+.field-label small{font-weight:700;color:var(--sub);margin-left:6px}
+.searchbox{display:flex;gap:8px}
+.searchbox input{flex:1 1 auto;min-width:0}
+.searchbox .btn{flex:none;padding-left:22px;padding-right:22px}
+input[type=search],select{width:100%;min-height:var(--btn-h);padding:8px 14px;border:2px solid var(--field);border-radius:12px;background:#fff;color:var(--ink);font:inherit;font-size:1rem}
+input[type=search]{background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%2315803d' d='M10 3a7 7 0 0 1 5.6 11.2l5.1 5.1-1.4 1.4-5.1-5.1A7 7 0 1 1 10 3zm0 2a5 5 0 1 0 0 10 5 5 0 0 0 0-10z'/%3E%3C/svg%3E") no-repeat 12px center/22px;padding-left:42px}
+select{appearance:none;-webkit-appearance:none;cursor:pointer;padding-right:42px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%2315803d' d='M7 9l5 5 5-5z'/%3E%3C/svg%3E") no-repeat right 10px center/26px}
+input[type=search]:focus,select:focus{border-color:var(--green);outline:3px solid rgba(34,197,94,.3);outline-offset:0}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:4px 14px;border:2px solid var(--field);border-radius:999px;background:#fff;color:var(--ink);font:inherit;font-size:.95rem;font-weight:700;cursor:pointer}
+.chip:hover{border-color:var(--green)}
+.chip .dot{width:.7em;height:.7em;border-radius:50%;flex:none}
+.chip .n{font-size:.8em;color:var(--sub)}
+.chip[aria-pressed="true"]{background:var(--green);border-color:var(--green);color:#fff}
+.chip[aria-pressed="true"]::before{content:"✓"}
+.chip[aria-pressed="true"] .n{color:#dcfce7}
+.chip[aria-pressed="true"] .dot{box-shadow:0 0 0 2px #fff}
+.field-row{display:grid;grid-template-columns:minmax(0,1fr);gap:0 16px}
+@media (min-width:768px){.field-row{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.panel-foot{display:flex;flex-direction:column;gap:12px;margin-top:22px;padding-top:18px;border-top:2px dashed var(--green-soft)}
+.hit{margin:0;text-align:center;font-size:1.05rem;font-weight:700}
+.hit b{font-size:1.7rem;color:var(--green-deep)}
+.panel-btns{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
+@media (min-width:560px){.panel-btns{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (min-width:880px){.panel-foot{flex-direction:row;align-items:center;justify-content:space-between}.panel-btns{display:flex}}
+
+/* 一覧 */
+.results{padding:8px 0 48px}
+.resultbar{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;gap:10px;margin:10px 0 12px;padding:8px 0;
+  background:rgba(255,255,255,.97);border-bottom:2px solid var(--green-soft)}
+.resultbar p{margin:0;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-weight:700}
+.resultbar b{font-size:1.35rem;color:var(--green-deep)}
+.rcond{color:var(--sub)}
+.resultbar .btn{flex:none;min-height:44px;padding:4px 14px;font-size:.9rem}
+.active{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 10px}
+.active .chip{background:var(--green-pale);border-color:var(--green-line)}
+.active .chip span{color:var(--green-dark);font-size:.85em}
+.linkbtn{min-height:44px;padding:0 6px;border:0;background:none;color:var(--green-dark);font:inherit;font-weight:700;text-decoration:underline;cursor:pointer}
+.sortnote{margin:0 0 14px;font-size:.9rem;color:var(--sub)}
+.banner{max-width:440px;margin:0 auto 18px}
+.banner img{display:block;width:100%;border:1px solid var(--line);border-radius:16px}
+.cards{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;margin:0;padding:0;list-style:none}
+@media (min-width:880px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.card{display:flex;flex-direction:column;gap:12px;min-width:0;background:#fff;border:1px solid var(--line);border-top:6px solid var(--green-soft);border-radius:var(--radius);padding:14px 16px 18px;box-shadow:0 2px 10px rgba(15,23,42,.05)}
+.card.picked{border-top-color:var(--pick-line);background:linear-gradient(var(--pick-bg),#fff 110px)}
+.card.signed{border-top-color:var(--green)}
+.card-title{margin:0;font-size:1.2rem;font-weight:800;line-height:1.5;overflow-wrap:anywhere}
+.card-title a{color:var(--ink);text-decoration:none}
+.card-title a:hover{color:var(--green-deep);text-decoration:underline}
+.card-summary{margin:0;font-size:.95rem;line-height:1.7;color:#374151;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.card-summary .lbl{display:inline-block;margin-right:6px;padding:0 7px;border-radius:6px;background:var(--green-pale);color:var(--green-dark);font-size:.8rem;font-weight:800}
+.facts{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:6px 14px;margin:0;padding:12px 14px;border-radius:12px;background:var(--bg-soft);font-size:.95rem}
+.facts dt{font-size:.88rem;font-weight:800;color:var(--sub);line-height:1.9}
+.facts dd{margin:0;min-width:0;overflow-wrap:anywhere}
+.facts .num{font-size:1.3rem;font-weight:800;color:var(--green-deep)}
+.facts .when{font-size:.85rem;color:var(--sub)}
+.clamp2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card-actions{display:flex;flex-direction:column;gap:10px;margin-top:auto}
+.empty{grid-column:1/-1;padding:24px 16px 30px;border-radius:var(--radius);background:var(--bg-soft);text-align:center}
+.empty img{width:170px}
+.empty-h{margin:8px 0 4px;font-size:1.25rem;font-weight:800;color:var(--green-deep)}
+.empty p{margin:0 0 14px}
+
+/* はじめての方へ */
+.steps{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;margin:0;padding:0;list-style:none}
+@media (min-width:768px){.steps{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.step{position:relative;display:flex;flex-direction:column;align-items:center;background:#fff;border:2px solid var(--green-soft);border-radius:22px;padding:18px 18px 20px}
+.step-n{position:absolute;left:14px;top:14px;display:flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:50%;background:var(--green);color:#fff;font-size:1.25rem;font-weight:800}
+.step img{display:block;height:140px;width:auto;max-width:100%;object-fit:contain;margin:6px 0 10px}
+.step h3{margin:0 0 6px;font-size:1.2rem;color:var(--green-deep);text-align:center}
+.step p{margin:0;align-self:stretch}
+.tip{display:flex;align-items:center;gap:16px;margin-top:18px;padding:16px 18px;border-radius:20px;background:#fff;border:2px dashed var(--green-line)}
+.tip img{flex:none;width:110px}
+.tip p{margin:0}
+@media (max-width:520px){.tip{flex-direction:column}}
+
+/* 注意事項 */
+.notes-main{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;align-items:center;margin-bottom:12px}
+.notes-main>img{display:block;width:150px;margin:0 auto}
+@media (min-width:768px){.notes-main{grid-template-columns:200px minmax(0,1fr)}.notes-main>img{width:190px}}
+
+/* 署名サイトの違い（まとめ） */
+.site-cards{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;margin:0 0 18px}
+@media (min-width:768px){.site-cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.site-card{border:2px solid;border-radius:16px;padding:14px 18px}
+.site-card.voice{background:#fff5f7;border-color:#fecdd3}
+.site-card.change{background:#fffbea;border-color:#fde68a}
+.site-card h3{margin:0 0 4px;font-size:1.15rem}
+.site-card ul{margin:0;padding-left:1.2em}
+
+/* ===== まとめページ・説明ページ ===== */
+.page{max-width:900px;padding-top:8px;padding-bottom:40px}
+.back{display:inline-flex;align-items:center;min-height:44px;font-weight:700}
+.page-title{margin:8px 0 14px;font-size:1.5rem;line-height:1.5;overflow-wrap:anywhere}
+@media (min-width:768px){.page-title{font-size:1.75rem}}
+.detail-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:767px){.detail-grid .side{order:-1}}
+@media (min-width:768px){.detail-grid{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr)}}
+.shot{display:block;width:100%;border:1px solid var(--line);border-radius:14px}
+.side{display:flex;flex-direction:column;gap:10px}
+.countbox{padding:14px 16px;border-radius:16px;background:var(--green-pale)}
+.countbox .k{display:block;font-size:.88rem;font-weight:800;color:var(--sub)}
+.countbox .num{font-size:2.1rem;font-weight:800;color:var(--green-deep)}
+.countbox .when{display:block;font-size:.85rem;color:var(--sub)}
+.page .box{margin:16px 0}
+.facts.plain{background:none;padding:0}
+.notice-box{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;align-items:center;background:var(--green-pale);border-color:var(--green-soft)}
+.notice-box>img{width:120px;margin:0 auto}
+@media (min-width:600px){.notice-box{grid-template-columns:130px minmax(0,1fr)}.notice-box>img{width:130px}}
+.chart{display:block;width:100%;height:auto}
+.chart polyline{fill:none;stroke:var(--green);stroke-width:3}
+.chart circle{fill:var(--green)}
+.chart text{fill:var(--sub);font-size:13px}
+.chart .axis{stroke:var(--line)}
+.page-intro{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;align-items:center}
+.page-intro>img{width:150px;margin:0 auto}
+@media (min-width:768px){.page-intro{grid-template-columns:minmax(0,1fr) 180px}.page-intro>img{width:180px}}
 """
+
+CSS_VER = hashlib.md5(BASE_CSS.encode("utf-8")).hexdigest()[:8]
+
+
+def write_css():
+    (OUT_DIR / "style.css").write_text(BASE_CSS.lstrip(), encoding="utf-8")
 
 
 SUMMARY_TEMPLATE = r"""<!DOCTYPE html>
@@ -335,75 +694,66 @@ SUMMARY_TEMPLATE = r"""<!DOCTYPE html>
 <meta property="og:url" content="__PAGE_URL__">
 __OG_IMAGE__
 <meta name="twitter:card" content="__CARD__">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✍️</text></svg>">
-<style>
-""" + BASE_CSS + r"""
-body{line-height:1.7}
-.wrap{max-width:640px;margin:0 auto;padding:12px 16px 40px}
-.back{font-size:.88rem;text-decoration:none}
-.meta{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0 6px;font-size:.8rem}
-h1{font-size:1.3rem;line-height:1.5;margin:4px 0 12px}
-.shot{width:100%;border:1px solid var(--line);border-radius:12px;display:block;margin:0 0 12px}
-.countbox{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
-.countbox b{font-size:1.6rem}
-.countbox small{color:var(--sub)}
-.btns{display:flex;flex-direction:column;gap:8px;margin:14px 0}
-.btns .btn{display:block;text-align:center;border-radius:12px;padding:14px;font-size:1.05rem;font-weight:700;width:100%}
-section{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin:12px 0}
-h2{font-size:1rem;margin:0 0 6px}
-dl{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:0}
-dt{color:var(--sub);font-size:.88rem}
-dd{margin:0;word-break:break-word}
-.chart{width:100%;height:auto;display:block}
-.chart polyline{fill:none;stroke:var(--accent);stroke-width:2.5}
-.chart circle{fill:var(--accent)}
-.chart text{fill:var(--sub);font-size:12px}
-.chart .axis{stroke:var(--line)}
-.sub{color:var(--sub);font-size:.85rem}
-footer{font-size:.78rem;color:var(--sub);margin-top:20px}
-</style>
+__HEAD__
 </head>
-<body>
-<div class="wrap">
-<a class="back" href="../">← 署名の一覧（__SITE_NAME__）</a>
-<div class="meta">__PICK____TAGS____PREF__<span class="left" id="left" hidden></span></div>
-<h1>__TITLE__</h1>
-__IMG__
-<div class="countbox"><span><small>賛同者</small> <b>__COUNT__</b> 人</span>__GROW__</div>
+<body id="top">
+__TOPBAR__
+<main class="wrap page">
+<a class="back" href="../">← 署名の一覧にもどる</a>
+<div class="badges"><span class="badge signed" id="signedmark" hidden>✅ 署名済み</span>__PICK__<span class="badge left" id="left" hidden></span>__TAGS____PREF____SITEBADGE__</div>
+<h1 class="page-title">__TITLE__</h1>
 
-<div class="notice" role="note">
-  <b class="h">⚠️ 署名する前にご確認ください</b>
-  <ul>
-    <li>下の「どんな署名？」と「発起人」を必ず確認してから署名してください。</li>
-    __CHANGE_NOTE__
-  </ul>
+<div class="detail-grid">
+  <div>__IMG__</div>
+  <div class="side">
+    __COUNTBOX__
+    <a class="btn btn-primary btn-block" href="__URL__" target="_blank" rel="noopener" aria-label="署名ページを見る（__SITE__・外部サイトが新しいタブで開きます）">署名ページを見る__EXT_ICON__</a>
+    <p class="ext-note">__SITE__（外部サイト）が新しいタブで開きます</p>
+    <div class="btn-row">
+      <button type="button" class="btn btn-sub" id="signed" aria-pressed="false">☐ 署名した</button>
+      <button type="button" class="btn btn-sub" id="share">𝕏 シェア</button>
+    </div>
+    <p class="note">「署名した」を押すと、この端末のブラウザの中にだけ記録されます。</p>
+  </div>
 </div>
 
-<div class="btns">
-  <a class="btn go" href="__URL__" target="_blank" rel="noopener">__SITE__ で署名する</a>
-  <button type="button" class="btn x" id="share">𝕏でシェアして広める</button>
-  <button type="button" class="btn done" id="signed">☐ 署名した（この端末に記録）</button>
-</div>
+<section class="box notice-box" aria-labelledby="notice-h">
+  __PLEASE_IMG__
+  <div>
+    <h2 id="notice-h">署名する前に、確認してね</h2>
+    <ul class="checklist">
+      <li><b>発起人と内容を確認してから</b>下の「どんな署名？」と「基本情報」の発起人を、必ず確認してから署名してください。</li>
+      __CHANGE_NOTE__
+      <li><b>掲載＝賛成・保証ではありません</b>この掲示板に載っていても、署名の内容に賛成・保証するものではありません。</li>
+      <li><b>支援金（お金）は任意です</b>署名のあとにお金の画面が出ても、払わずに署名だけで参加できます。くわしくは<a href="../sites.html">署名サイトの違い</a>へ。</li>
+    </ul>
+  </div>
+</section>
 
-<section>
+<section class="box">
   <h2>📝 どんな署名？</h2>
   <p>__SUMMARY__</p>
-  <p class="sub">※ 署名ページの本文の書き出しです。全文は署名ページでご確認ください。</p>
+  <p class="note">※ 署名ページの本文の書き出しです。全文は署名ページでご確認ください。</p>
 </section>
 
-<section>
+<section class="box">
   <h2>📋 基本情報</h2>
-  <dl>__FACTS__</dl>
+  <dl class="facts plain">__FACTS__</dl>
 </section>
 
-<section>
+<section class="box">
   <h2>📈 署名数の推移</h2>
   __CHART__
+  <p class="note">署名数は当サイトが確認した日の人数です。最新の人数は署名ページでご確認ください。</p>
 </section>
 
-<footer>このページは署名サイトの公開情報をまとめたものです。署名数は当サイトが確認した日の人数です。正確な内容は必ず署名ページでご確認ください。</footer>
-</div>
+<a class="btn btn-primary btn-block" href="__URL__" target="_blank" rel="noopener" aria-label="署名ページを見る（__SITE__・外部サイトが新しいタブで開きます）">署名ページを見る__EXT_ICON__</a>
+<p class="ext-note">__SITE__（外部サイト）が新しいタブで開きます</p>
+<p style="text-align:center;margin-top:20px"><a class="btn btn-sub" href="../">← 署名の一覧にもどる</a></p>
+</main>
+__FOOTER__
 <script>
+__COMMON_JS__
 __SHARE_JS__
 const end = '__END_ISO__';
 if (end) {
@@ -411,7 +761,7 @@ if (end) {
   const dl = Math.round((Date.UTC(...end.split('-').map((v, i) => i === 1 ? v - 1 : +v)) - ymd(new Date())) / 86400000);
   const left = document.getElementById('left');
   left.hidden = false;
-  left.textContent = dl < 0 ? '終了' : dl === 0 ? '本日終了' : `あと${dl}日`;
+  left.textContent = '⏰ ' + (dl < 0 ? '終了' : dl === 0 ? '本日終了' : `あと${dl}日`);
   if (dl <= __URGENT_DAYS__) left.classList.add('urgent');
 }
 document.getElementById('share').onclick = () => shareX(__SHARE__);
@@ -420,11 +770,11 @@ const ID = __ID__;
 const sb = document.getElementById('signed');
 const paint = () => {
   const on = !!loadSigned()[ID];
-  sb.classList.toggle('on', on);
   sb.setAttribute('aria-pressed', on);
-  sb.textContent = on ? '✅ 署名済み（もう一度押すと取り消し）' : '☐ 署名した（この端末に記録）';
+  sb.textContent = on ? '✅ 署名済み（押すと取り消し）' : '☐ 署名した';
+  document.getElementById('signedmark').hidden = !on;
 };
-sb.onclick = () => { toggleSigned(ID); paint(); };
+sb.onclick = () => { toast(toggleSigned(ID) ? '✅ 署名済みにしました。ありがとう！' : '署名済みを取り消しました'); paint(); };
 paint();
 </script>
 </body>
@@ -445,155 +795,239 @@ TEMPLATE = r"""<!DOCTYPE html>
 <meta property="og:url" content="__SITE_URL__">
 __OG_IMAGE__
 <meta name="twitter:card" content="summary_large_image">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✍️</text></svg>">
-<style>
-""" + BASE_CSS + r"""
-.wrap{max-width:860px;margin:0 auto;padding:0 16px}
-header{padding:28px 0 12px}
-h1{font-size:1.6rem;margin:0 0 4px;letter-spacing:.02em}
-.lead{color:var(--sub);margin:0 0 12px;font-size:.95rem}
-.stats{display:flex;gap:10px;flex-wrap:wrap;font-size:.85rem;color:var(--sub)}
-.stats b{color:var(--ink);font-size:1.1rem}
-.updated{display:inline-flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;background:var(--card);border:2px solid var(--accent);border-radius:12px;padding:8px 16px;margin:4px 0 10px}
-.u-label{font-weight:700;color:var(--accent);font-size:.95rem}
-.u-date{font-size:1.45rem;letter-spacing:.02em}
-.u-note{color:var(--sub);font-size:.85rem}
-.filters{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0;border-bottom:1px solid var(--line)}
-.tagbar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
-.tagbtn{border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:5px 12px;font-size:.88rem;cursor:pointer;font-family:inherit}
-.tagbtn .n{opacity:.7;margin-left:4px;font-size:.8em}
-.tagbtn[aria-pressed="true"]{color:#fff;border-color:transparent}
-.row{display:flex;gap:6px;flex-wrap:wrap}
-.row input{flex:1 1 220px}
-.row select{flex:1 1 110px}
-.row input,.row select{min-width:0;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);font-size:.92rem;font-family:inherit}
-.count{font-size:.85rem;color:var(--sub);margin:10px 0 4px}
-ul.list{list-style:none;padding:0;margin:0 0 40px}
-.item{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:10px 0;border-left:5px solid var(--tagc,var(--line))}
-.item.picked{background:linear-gradient(var(--pick-bg),var(--card) 60px)}
-.meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:.8rem;color:var(--sub);margin-bottom:4px}
-.item h2{font-size:1rem;margin:4px 0 6px;font-weight:600;line-height:1.5}
-.item h2 a{color:var(--ink);text-decoration:none}
-.item h2 a:hover{text-decoration:underline}
-.who{font-size:.8rem;color:var(--sub);margin:0 0 8px;line-height:1.5;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
-.num{font-size:.9rem;margin:0 0 8px}
-.num b{font-size:1.15rem}
-.foot{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;font-size:.82rem;color:var(--sub)}
-.actions{display:flex;gap:6px;flex-wrap:wrap}
-.empty{text-align:center;color:var(--sub);padding:40px 0}
-/* 注意書きとしょめたんを横並びに（スマホでは縦に積み、絵を小さめにする） */
-.intro{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,42%);gap:14px;align-items:center;margin:12px 0}
-.intro .notice{margin:0}
-.chara{margin:0}
-.chara img{width:100%;height:auto;display:block;border-radius:14px;border:1px solid var(--line);transition:opacity .2s}
-@media (max-width:600px){
-  .intro{grid-template-columns:1fr;gap:10px}
-  .chara img{width:auto;max-width:100%;max-height:170px;margin:0 auto}
-}
-.chara img.fade{opacity:0}
-.item.signed{opacity:.75}
-.hide-signed{display:inline-flex;align-items:center;gap:4px;font-size:.88rem;color:var(--sub);cursor:pointer;white-space:nowrap}
-footer{font-size:.8rem;color:var(--sub);padding:20px 0 40px;border-top:1px solid var(--line)}
-</style>
+__HEAD__
 </head>
-<body>
-<div class="wrap">
-<header>
-  <p style="font-size:.85rem;margin:0 0 10px"><a href="posts.html">📣 X投稿文ページ</a>　<a href="sites.html">🔍 署名サイトの違い（Voice と change.org）</a></p>
-  <h1>✍️ __SITE_NAME__</h1>
-  <p class="lead">__SITE_DESC__</p>
-  <div class="updated"><span class="u-label">📅 最終更新日</span><b class="u-date">__UPDATED_JP__</b><span class="u-note">__UPDATE_NOTE__</span></div>
-  <div class="stats"><span>掲載中 <b>__COUNT__</b> 件</span><span id="mine"></span></div>
-  <div class="intro">
-    <div class="notice" role="note">
-      <b class="h">⚠️ 署名する前にご確認ください</b>
-      <ul>
-        <li>このページでは、change.org と Voice の2つの署名サイトをキーワードで検索し、その中から運営者が選んだ署名を載せています。内容を保証するものではありません。</li>
-        <li>署名する前に、必ず<b>概要</b>と<b>発起人</b>を確認してください。</li>
-        <li>change.org の署名については、内容をよく確かめたうえで、ご自身で判断してください。</li>
-        <li>2つのサイトの違い（支援金の行き先など）は <a href="sites.html">署名サイトの違い</a> をご覧ください。</li>
+<body id="top">
+__TOPBAR__
+<main>
+<!-- ①タイトル ②しょめたん ③説明 ④件数・最終更新日 -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <h1>__SITE_NAME__</h1>
+    <figure class="hero-illust">__HERO_IMG__</figure>
+    <div class="hero-text">
+      <p class="hero-lead"><span class="nw">気になる署名を探して、</span><span class="nw">あなたの声を届けよう</span></p>
+      <p class="hero-desc">__SITE_DESC__</p>
+      <ul class="stats">
+        <li class="stat"><span class="k">掲載中の署名</span><span class="v"><b>__COUNT__</b> 件</span></li>
+        <li class="stat"><span class="k">最終更新日</span><span class="v">__UPDATED_JP__</span><span class="s">__UPDATE_NOTE__</span></li>
+        <li class="stat" id="mineStat" hidden><span class="k">あなたが署名した</span><span class="v"><b id="mineN">0</b> 件</span><span class="s">この端末の記録</span></li>
+      </ul>
+      <div class="hero-btns">
+        <a class="btn btn-primary" href="#search">署名をさがす</a>
+        <a class="btn btn-sub" href="#howto">はじめての方へ</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ⑤キーワード検索 ⑥テーマ別・地域別の絞り込み -->
+<section class="search-area" aria-labelledby="search-h">
+  <div class="wrap">
+  <div class="panel" id="search">
+    <div class="panel-head">
+      <div>
+        <h2 class="section-h" id="search-h">署名をさがす</h2>
+        <p>キーワード・テーマ・地域を組み合わせて探せます。</p>
+      </div>
+      __IMG_SEARCH__
+    </div>
+    <div class="field">
+      <label class="field-label" for="q">キーワード</label>
+      <div class="searchbox">
+        <input id="q" type="search" placeholder="例：大阪、墓地" autocomplete="off" enterkeyhint="search">
+        <button type="button" class="btn btn-primary" id="go">探す</button>
+      </div>
+    </div>
+    <div class="field" role="group" aria-labelledby="tag-l">
+      <span class="field-label" id="tag-l">テーマ<small>1つ選べます</small></span>
+      <div class="chips" id="tagbar"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label class="field-label" for="pref">地域（都道府県）</label><select id="pref"></select></div>
+      <div class="field"><label class="field-label" for="sort">並び順</label>
+        <select id="sort">
+          <option value="new">新着順</option>
+          <option value="count">署名が多い順</option>
+          <option value="rate">最近伸びている順</option>
+          <option value="end">終了日が近い順</option>
+        </select></div>
+      <div class="field"><label class="field-label" for="signedSel">署名済み（✅）の署名</label>
+        <select id="signedSel">
+          <option value="all">表示する</option>
+          <option value="hide">隠す</option>
+          <option value="only">署名済みだけ表示</option>
+        </select></div>
+    </div>
+    <div class="panel-foot">
+      <p class="hit" id="hit" aria-live="polite"></p>
+      <div class="panel-btns">
+        <button type="button" class="btn btn-sub" id="clear">条件をクリア</button>
+        <a class="btn btn-primary" href="#results">結果を見る ↓</a>
+      </div>
+    </div>
+  </div>
+  </div>
+</section>
+
+<!-- ⑦署名一覧 -->
+<section class="results" aria-labelledby="results-h">
+  <div class="wrap">
+    <h2 class="section-h" id="results-h">署名の一覧</h2>
+    <div class="resultbar" id="results">
+      <p><b id="rcount">0</b>件を表示中 <span class="rcond" id="rcond"></span></p>
+      <a class="btn btn-sub" href="#search">条件を変える</a>
+    </div>
+    <div class="active" id="active" hidden></div>
+    <p class="sortnote" id="sortnote"></p>
+    <figure class="banner" id="banner" hidden><img id="bannerImg" src="data:," alt="" width="800" height="533"></figure>
+    <ul class="cards" id="list"></ul>
+  </div>
+</section>
+
+<!-- はじめての方へ -->
+<section class="section soft" id="howto" aria-labelledby="howto-h">
+  <div class="wrap">
+    <h2 class="section-h" id="howto-h">署名ってどうするの？</h2>
+    <p class="section-lead">はじめての方へ。ネットの署名は、3つのステップで参加できます。</p>
+    <ol class="steps">
+      <li class="step"><span class="step-n" aria-hidden="true">1</span>__IMG_STEP1__
+        <h3>気になる署名を探す</h3>
+        <p>上の<a href="#search">「署名をさがす」</a>で、キーワード・テーマ・地域を組み合わせて探せます。</p></li>
+      <li class="step"><span class="step-n" aria-hidden="true">2</span>__IMG_STEP2__
+        <h3>内容と発起人を確認する</h3>
+        <p>カードの「くわしく見る」や署名ページで、何を求める署名か、だれが始めたか（発起人）を確かめます。</p></li>
+      <li class="step"><span class="step-n" aria-hidden="true">3</span>__IMG_STEP3__
+        <h3>署名サイトで賛同する</h3>
+        <p>緑の「署名ページを見る」を押すと、署名サイト（Voice または change.org）が開きます。内容に賛成できたら、そのサイトで署名します。</p></li>
+    </ol>
+    <div class="tip">__IMG_THANKS__
+      <p><b>署名したら「☐ 署名した」を押しておこう。</b>カードに ✅ がついて、どれに署名したかがひと目でわかります。「署名済み（✅）の署名」で、隠したり、それだけ表示したりもできます。記録はこの端末のブラウザの中だけに残り、どこにも送られません。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ⑧注意事項・署名サイトの違い -->
+<section class="section" id="notes" aria-labelledby="notes-h">
+  <div class="wrap">
+    <h2 class="section-h" id="notes-h">署名する前に確認してほしいこと</h2>
+    <div class="notes-main">
+      __IMG_PLEASE__
+      <ul class="checklist">
+        <li><b>掲載＝賛成・保証ではありません</b>この掲示板に載っていても、署名の内容に賛成したり、保証したりするものではありません。</li>
+        <li><b>発起人と内容を確かめてから署名を</b>だれが、何を求めて始めた署名なのかを確認してから、ご自身で判断してください。</li>
+        <li><b>署名数は「確認した日」の人数です</b>カードに確認した日を書いています。最新の人数は署名ページでご確認ください。</li>
+        <li><b>支援金（お金）は任意です</b>署名のあとに「お金で応援しませんか」という画面が出ることがありますが、払わなくても署名だけで参加できます。</li>
       </ul>
     </div>
-    <figure class="chara"><img id="chara" src="__CHARA_ALL__" alt="しょめたん（署名をあつめる妖精）" width="800" height="533"></figure>
+    <details>
+      <summary>この掲示板にのせている署名について</summary>
+      <div>
+        <p>このページでは、change.org と Voice の2つの署名サイトをキーワードで検索し、その中から運営者が選んだ署名を載せています。内容を保証するものではありません。</p>
+        <p>change.org の署名については、内容をよく確かめたうえで、ご自身で判断してください。</p>
+        <p>カードの「概要」は、署名ページの本文の書き出しです。全文は署名ページでご確認ください。</p>
+      </div>
+    </details>
+    <details>
+      <summary>支援金（お金での応援）について</summary>
+      <div>
+        <p>どちらのサイトも、署名のあとに「お金で応援しませんか」という画面が出ることがあります。<b>お金を払わなくても、署名だけで参加できます。</b>支払い画面が出ても、そのまま閉じてかまいません。</p>
+        <ul>
+          <li>Voice の「エール」は、署名を始めた人（発起人）に届きます（手数料を引いた額）。</li>
+          <li>change.org の支援金は、発起人ではなく change.org（運営会社）に支払われます。</li>
+        </ul>
+        <p>くわしくは <a href="sites.html">署名サイトの違い</a> をご覧ください。</p>
+      </div>
+    </details>
+    <details>
+      <summary>「署名した」の記録について</summary>
+      <div>
+        <p>「☐ 署名した」を押すと、この端末のブラウザの中だけに記録されます（どこにも送られません）。</p>
+        <p>別の端末や、閲覧履歴を消したあとには引き継がれません。</p>
+      </div>
+    </details>
+
+    <h2 class="section-h" id="sites" style="margin-top:40px">署名サイトの違い（Voice と change.org）</h2>
+    <p class="section-lead">この掲示板の署名は、Voice と change.org の2つのサイトのものです。運営している会社や、支援金の行き先がちがいます。</p>
+    <div class="site-cards">
+      <div class="site-card voice"><h3>📣 Voice</h3><ul><li>運営：Voice株式会社（日本の会社）</li><li>支援金（エール）は、発起人に届きます</li></ul></div>
+      <div class="site-card change"><h3>🌐 change.org</h3><ul><li>運営：Change.org, Inc.（アメリカの会社）</li><li>支援金は、運営会社（change.org）に支払われます</li></ul></div>
+    </div>
+    <a class="btn btn-primary" href="sites.html">2つのサイトの違いをくわしく見る →</a>
   </div>
-</header>
+</section>
+</main>
+__FOOTER__
 
-<div class="filters">
-  <div class="tagbar" id="tagbar" role="group" aria-label="テーマで絞り込み"></div>
-  <div class="row">
-    <input id="q" type="search" placeholder="キーワードで探す（例：大阪、墓地）">
-    <select id="pref"><option value="">すべての地域</option></select>
-    <select id="sort">
-      <option value="new" selected>新着順</option>
-      <option value="count">署名が多い順</option>
-      <option value="rate">最近伸びている順</option>
-      <option value="end">終了日が近い順</option>
-    </select>
-    <label class="hide-signed"><input type="checkbox" id="hideSigned"> 署名済みを隠す</label>
-  </div>
-</div>
-
-<p class="count" id="count"></p>
-<ul class="list" id="list"></ul>
-
-<footer>
-  出典：<a href="https://www.change.org/" target="_blank" rel="noopener">change.org</a>・<a href="https://voice.charity/" target="_blank" rel="noopener">Voice</a> の公開情報。
-  署名数は当サイトが確認した日の人数で、最新の人数とは異なる場合があります。必ず署名ページで内容をご確認ください。
-</footer>
-</div>
-
-<div class="toast" id="toast" role="status"></div>
 <script id="data" type="application/json">__DATA__</script>
 <script>
+__COMMON_JS__
 __SIGNED_JS__
+__SHARE_JS__
 const D = JSON.parse(document.getElementById('data').textContent);
+const $ = id => document.getElementById(id);
 const tagColor = Object.fromEntries(D.tags.map(t => [t.name, t.color]));
 const charaOf = Object.fromEntries(D.tags.map(t => [t.name, t.chara]));
-const state = { tag: '', q: '', pref: '', sort: 'new', hideSigned: false };
-const PICK = '__pick__';
+const PICK = '__pick__', NONE = '__none__';
+const EXT = '__EXT_ICON__';
+const SORTS = { new: '新着順', count: '署名が多い順', rate: '最近伸びている順', end: '終了日が近い順' };
+const DEFAULT = { q: '', tag: '', pref: '', sort: 'new', signed: 'all' };
+const state = { ...DEFAULT };
 
-// タブに合わせて、しょめたんの絵を切り替える（そのテーマの絵が無ければ「すべて」の絵）
-function showChara(){
-  const img = document.getElementById('chara');
-  const src = (state.tag === PICK ? D.charaPick : charaOf[state.tag]) || D.charaAll;
-  if (!src || img.getAttribute('src') === src) return;
-  img.classList.add('fade');
-  setTimeout(() => { img.onload = () => img.classList.remove('fade'); img.src = src; }, 150);
-}
-function toast(msg){
-  const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
-  clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('show'), 1800);
-}
-
+function esc(s){ return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+const norm = s => String(s ?? '').normalize('NFKC').toLowerCase();
+const num = n => n.toLocaleString();
 function ymd(d){ return Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()); }
 function daysLeft(iso){ const [y,m,d] = iso.split('-').map(Number); return Math.round((Date.UTC(y, m-1, d) - ymd(new Date())) / 86400000); }
-function md(iso){ const [, m, d] = iso.split('-').map(Number); return `${m}/${d}`; }
+function mdJp(iso){ const [, m, d] = iso.split('-').map(Number); return `${m}月${d}日`; }
 function ymdJp(iso){ const [y, m, d] = iso.split('-').map(Number); return `${y}年${m}月${d}日`; }
-function esc(s){ return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-const num = n => n == null ? '—' : n.toLocaleString();
+const siteName = i => i.site === 'Change' ? 'change.org' : 'Voice';
+// キーワードは、タイトル・概要・発起人・提出先・地域・テーマ・サイト名から探す（全角半角・大文字小文字は区別しない）
+D.items.forEach(i => { i.text = norm([i.title, i.summary, i.starter, i.target, i.pref, ...i.tags, siteName(i)].join(' ')); });
 
-[...new Set(D.items.map(i => i.pref).filter(Boolean))].sort().forEach(p => {
-  const o = document.createElement('option'); o.value = o.textContent = p;
-  document.getElementById('pref').appendChild(o);
-});
+// テーマのボタン
+const chips = [{ name: '', label: 'すべて', n: D.items.length },
+               { name: PICK, label: '⭐ おすすめ', n: D.items.filter(i => i.pick).length },
+               ...D.tags.map(t => ({ name: t.name, label: t.name, color: t.color, n: D.items.filter(i => i.tags.includes(t.name)).length }))]
+  .filter(t => t.name === '' || t.n);
+const tagbar = $('tagbar');
+tagbar.innerHTML = chips.map(t => `<button type="button" class="chip" data-tag="${esc(t.name)}" aria-pressed="false">`
+  + (t.color ? `<span class="dot" style="background:${t.color}"></span>` : '') + `${esc(t.label)}<span class="n">${t.n}件</span></button>`).join('');
 
-const tagbar = document.getElementById('tagbar');
-const buttons = [{name:'', label:'すべて', color:'#444', n:D.items.length},
-                 {name:PICK, label:'⭐おすすめ', color:'#b45309', n:D.items.filter(i => i.pick).length},
-                 ...D.tags.map(t => ({...t, label:t.name, n:D.items.filter(i => i.tags.includes(t.name)).length}))];
-buttons.filter(t => t.name === '' || t.n).forEach(t => {
-  const b = document.createElement('button');
-  b.className = 'tagbtn'; b.type = 'button';
-  b.innerHTML = `${esc(t.label)}<span class="n">${t.n}</span>`;
-  b.dataset.tag = t.name; b.dataset.color = t.color;
-  b.onclick = () => { state.tag = t.name; showChara(); render(); };
-  tagbar.appendChild(b);
-});
-document.getElementById('hideSigned').onchange = e => { state.hideSigned = e.target.checked; render(); };
+// 地域：北から順に、地方ごとにまとめる
+const AREAS = [['北海道・東北', 7], ['関東', 7], ['中部', 9], ['近畿', 7], ['中国', 5], ['四国', 4], ['九州・沖縄', 8]];
+const prefIndex = p => D.prefs.indexOf(p.replace(/[都府県]$/, ''));
+const prefCount = {};
+D.items.forEach(i => { const k = i.pref || NONE; prefCount[k] = (prefCount[k] || 0) + 1; });
+const prefSel = $('pref');
+prefSel.add(new Option(`すべての地域（${D.items.length}件）`, ''));
+let from = 0;
+for (const [area, n] of AREAS) {
+  const names = Object.keys(prefCount).filter(p => p !== NONE && prefIndex(p) >= from && prefIndex(p) < from + n).sort((a, b) => prefIndex(a) - prefIndex(b));
+  from += n;
+  if (!names.length) continue;
+  const g = document.createElement('optgroup'); g.label = area;
+  names.forEach(p => g.appendChild(new Option(`${p}（${prefCount[p]}件）`, p)));
+  prefSel.appendChild(g);
+}
+const others = Object.keys(prefCount).filter(p => p !== NONE && prefIndex(p) < 0);
+if (others.length || prefCount[NONE]) {
+  const g = document.createElement('optgroup'); g.label = 'そのほか';
+  others.forEach(p => g.appendChild(new Option(`${p}（${prefCount[p]}件）`, p)));
+  if (prefCount[NONE]) g.appendChild(new Option(`地域の記載がない署名（${prefCount[NONE]}件）`, NONE));
+  prefSel.appendChild(g);
+}
 
-document.getElementById('q').oninput = e => { state.q = e.target.value.trim(); render(); };
-document.getElementById('pref').onchange = e => { state.pref = e.target.value; render(); };
-document.getElementById('sort').onchange = e => { state.sort = e.target.value; render(); };
+// アドレスに残した条件を読む（戻るボタンや再読みこみで、条件が消えないように）
+const P = new URLSearchParams(location.search);
+for (const k of Object.keys(state)) if (P.get(k)) state[k] = P.get(k);
+if (!chips.some(t => t.name === state.tag)) state.tag = '';
+if (![...prefSel.options].some(o => o.value === state.pref)) state.pref = '';
+if (!SORTS[state.sort]) state.sort = 'new';
+if (!['all', 'hide', 'only'].includes(state.signed)) state.signed = 'all';
+function syncControls(){
+  $('q').value = state.q; prefSel.value = state.pref; $('sort').value = state.sort; $('signedSel').value = state.signed;
+}
 
 const sorters = {
   count: (a, b) => (b.count || 0) - (a.count || 0),
@@ -603,58 +1037,130 @@ const sorters = {
   new:   (a, b) => (b.found || '').localeCompare(a.found || '') || (b.start || '').localeCompare(a.start || ''),
 };
 
+// いま選んでいる条件（表示用）
+function conditions(){
+  const c = [];
+  if (state.q) c.push({ key: 'q', label: `キーワード「${state.q}」`, short: `「${state.q}」` });
+  if (state.tag) c.push({ key: 'tag', label: state.tag === PICK ? '⭐ おすすめ' : `テーマ：${state.tag}`, short: state.tag === PICK ? 'おすすめ' : state.tag });
+  if (state.pref) c.push({ key: 'pref', label: `地域：${state.pref === NONE ? '記載なし' : state.pref}`, short: state.pref === NONE ? '地域の記載なし' : state.pref });
+  if (state.signed !== 'all') c.push({ key: 'signed', label: state.signed === 'hide' ? '署名済みを隠す' : '署名済みだけ', short: state.signed === 'hide' ? '署名済みを隠す' : '署名済みだけ' });
+  return c;
+}
+
+function card(i, done){
+  const site = siteName(i);
+  let left = '';
+  if (i.end) {
+    const dl = daysLeft(i.end);
+    left = `<span class="badge left${dl <= D.urgentDays ? ' urgent' : ''}">⏰ ${dl <= 0 ? '本日終了' : `あと${dl}日`}</span>`;
+  }
+  const badges = [done && '<span class="badge signed">✅ 署名済み</span>', i.pick && '<span class="badge pick">⭐ おすすめ</span>', left].filter(Boolean).join('');
+  const facts = [
+    ['テーマ', `<span class="badges">${i.tags.map(t => `<span class="badge"><span class="dot" style="background:${tagColor[t]}"></span>${esc(t)}</span>`).join('')}</span>`],
+    i.pref && ['地域', `📍 ${esc(i.pref)}`],
+    ['掲載元', `<span class="badge ${i.site === 'Change' ? 'change' : 'voice'}">${site}</span>`],
+    i.count != null && ['署名数', `<span class="num">${num(i.count)}</span> 人 <span class="when">（${ymdJp(i.countDate)} 確認）</span>`
+      + (i.grow > 0 ? `<span class="grow">↑ 前回（${mdJp(i.growFrom)}）から +${num(i.grow)}人</span>` : '')],
+    i.starter && ['発起人', `<span class="clamp2">${esc(i.starter)}</span>`],
+    i.target && ['提出先', `<span class="clamp2">${esc(i.target)}</span>`],
+    (i.start || i.end) && ['期間', [i.start && `${ymdJp(i.start)} 開始`, i.end && `${ymdJp(i.end)} 終了`].filter(Boolean).join('<br>')],
+  ].filter(Boolean).map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('');
+  return `<li class="card${i.pick ? ' picked' : ''}${done ? ' signed' : ''}">
+    ${badges ? `<div class="badges">${badges}</div>` : ''}
+    <h3 class="card-title"><a href="${esc(i.page)}">${esc(i.title)}</a></h3>
+    ${i.summary ? `<p class="card-summary"><span class="lbl">概要</span>${esc(i.summary)}</p>` : ''}
+    <dl class="facts">${facts}</dl>
+    <div class="card-actions">
+      <a class="btn btn-primary btn-block" href="${esc(i.url)}" target="_blank" rel="noopener" aria-label="署名ページを見る（${site}・外部サイトが新しいタブで開きます）">署名ページを見る${EXT}</a>
+      <p class="ext-note">${site}（外部サイト）が開きます</p>
+      <div class="btn-row">
+        <button type="button" class="btn btn-sub" data-signed="${esc(i.id)}" aria-pressed="${done}">${done ? '✅ 署名済み' : '☐ 署名した'}</button>
+        <a class="btn btn-sub" href="${esc(i.page)}">くわしく見る</a>
+        <button type="button" class="btn btn-sub" data-share="${esc(i.id)}">𝕏 シェア</button>
+      </div>
+    </div>
+  </li>`;
+}
+
+function empty(signed){
+  const none = state.signed === 'only' && !D.items.some(i => signed[i.id]);
+  return `<li class="empty"><img src="${D.oops.src}" alt="「あれっ？」とおどろく、しょめたん" width="${D.oops.w}" height="${D.oops.h}">
+    <p class="empty-h">${none ? 'まだ「署名した」を押した署名はありません' : '条件に合う署名が見つかりませんでした'}</p>
+    <p>${none ? '署名したあとにカードの「☐ 署名した」を押すと、ここに表示されます。' : 'キーワードを短くしたり、テーマや地域を「すべて」にしたりして、もう一度さがしてみてください。'}</p>
+    <button type="button" class="btn btn-primary" data-clear="all">条件をクリアする</button></li>`;
+}
+
 function render(){
   const signed = loadSigned();
-  const mineN = D.items.filter(i => signed[i.id]).length;
-  document.getElementById('mine').innerHTML = mineN ? `あなたの署名 <b>${mineN}</b> 件` : '';
-  tagbar.querySelectorAll('.tagbtn').forEach(b => {
-    const on = b.dataset.tag === state.tag;
-    b.setAttribute('aria-pressed', on);
-    b.style.background = on ? b.dataset.color : '';
-  });
+  const mine = D.items.filter(i => signed[i.id]).length;
+  $('mineStat').hidden = !mine; $('mineN').textContent = mine;
+  tagbar.querySelectorAll('.chip').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.tag === state.tag)));
+  const words = norm(state.q).split(/\s+/).filter(Boolean);
   const items = D.items.filter(i =>
     (!state.tag || (state.tag === PICK ? i.pick : i.tags.includes(state.tag))) &&
-    (!state.pref || i.pref === state.pref) &&
-    (!state.hideSigned || !signed[i.id]) &&
-    (!state.q || (i.title + i.starter + i.target + i.pref).includes(state.q))
+    (!state.pref || (state.pref === NONE ? !i.pref : i.pref === state.pref)) &&
+    (state.signed !== 'hide' || !signed[i.id]) &&
+    (state.signed !== 'only' || signed[i.id]) &&
+    words.every(w => i.text.includes(w))
   // おすすめはいつも先頭（おすすめどうしは、選別画面で決めた順位の順）
   ).sort((a, b) => (b.pick - a.pick) || (a.pick && b.pick ? a.rank - b.rank : 0) || sorters[state.sort](a, b));
-  const label = document.querySelector('#sort option:checked').textContent;
-  document.getElementById('count').textContent = `${items.length} 件を表示中（⭐おすすめ → ${label}）`;
-  const list = document.getElementById('list');
-  if (!items.length){ list.innerHTML = '<li class="empty">条件に合う署名はありません</li>'; return; }
-  list.innerHTML = items.map(i => {
-    const first = i.tags[0];
-    let left = '';
-    if (i.end) {
-      const dl = daysLeft(i.end);
-      left = `<span class="left${dl <= D.urgentDays ? ' urgent' : ''}">${dl <= 0 ? '本日終了' : `あと${dl}日`}</span>`;
-    }
-    const who = [i.starter && `発起人：${esc(i.starter)}`, i.target && `提出先：${esc(i.target)}`].filter(Boolean).join('　');
-    const done = !!signed[i.id];
-    return `<li class="item${i.pick ? ' picked' : ''}${done ? ' signed' : ''}" style="${first ? '--tagc:' + tagColor[first] : ''}">
-      <div class="meta">${done ? '<span class="signedmark">✅署名済み</span>' : ''}${i.pick ? '<span class="pick">⭐おすすめ</span>' : ''}${left}
-        ${i.tags.map(t => `<span class="tag" style="background:${tagColor[t]}">${esc(t)}</span>`).join('')}
-        ${i.pref ? `<span class="cat">${esc(i.pref)}</span>` : ''}${i.site === 'Change' ? '<span class="cat change">change.org</span>' : '<span class="cat voice">Voice</span>'}</div>
-      <h2><a href="${esc(i.page)}">${esc(i.title)}</a></h2>
-      ${who ? `<p class="who">${who}</p>` : ''}
-      <p class="num">賛同 <b>${num(i.count)}</b> 人 ${i.grow > 0 ? `<span class="grow">（${md(i.growFrom)}から +${num(i.grow)}）</span>` : ''}</p>
-      <div class="foot"><span>${[i.start && `開始日 ${ymdJp(i.start)}`, i.end && `終了日 ${ymdJp(i.end)}`].filter(Boolean).join('　')}</span>
-        <span class="actions"><a class="btn sum" href="${esc(i.page)}">まとめ</a>
-        <a class="btn go" href="${esc(i.url)}" target="_blank" rel="noopener">署名ページへ</a>
-        <button type="button" class="btn x" data-id="${esc(i.id)}">𝕏でシェア</button>
-        <button type="button" class="btn done${done ? ' on' : ''}" data-signed="${esc(i.id)}" aria-pressed="${done}">${done ? '✅署名した' : '☐署名した'}</button></span></div>
-    </li>`;
-  }).join('');
+
+  const conds = conditions();
+  $('hit').innerHTML = `全${D.items.length}件のうち <b>${items.length}</b> 件が見つかりました`;
+  $('rcount').textContent = items.length;
+  $('rcond').textContent = conds.length ? `（${conds.map(c => c.short).join('・')}）` : '（すべての署名）';
+  $('active').hidden = !conds.length;
+  $('active').innerHTML = conds.map(c => `<button type="button" class="chip" data-clear="${c.key}" aria-label="${esc(c.label)} の条件を外す">${esc(c.label)}<span aria-hidden="true">✕</span></button>`).join('')
+    + (conds.length > 1 ? '<button type="button" class="linkbtn" data-clear="all">すべてクリア</button>' : '');
+  $('clear').disabled = !conds.length;
+  $('sortnote').textContent = `並び順：⭐おすすめを先頭に、${SORTS[state.sort]}`;
+
+  // テーマを選んだときは、そのテーマのしょめたんの絵を出す（テーマ専用の絵がなければ共通の絵）
+  const src = state.tag === PICK ? D.charaPick : state.tag ? (charaOf[state.tag] || D.charaAll) : '';
+  const banner = $('banner'), bimg = $('bannerImg');
+  banner.hidden = !src;
+  if (src) {
+    if (bimg.getAttribute('src') !== src) bimg.src = src;
+    bimg.alt = state.tag === PICK ? 'しょめたんのイラスト（おすすめの署名）' : `しょめたんのイラスト（「${state.tag}」の署名）`;
+  }
+
+  $('list').innerHTML = items.length ? items.map(i => card(i, !!signed[i.id])).join('') : empty(signed);
+
+  const p = new URLSearchParams();
+  for (const k of Object.keys(state)) if (state[k] !== DEFAULT[k]) p.set(k, state[k]);
+  const qs = p.toString();
+  try { history.replaceState(null, '', location.pathname + (qs ? '?' + qs : '') + location.hash); } catch (e) {}
 }
-render();
-__SHARE_JS__
-document.getElementById('list').addEventListener('click', e => {
+
+function clearAll(){ Object.assign(state, { q: '', tag: '', pref: '', signed: 'all' }); syncControls(); render(); }
+function showResults(){ $('q').blur(); $('results').scrollIntoView(); }
+
+$('q').addEventListener('input', e => { state.q = e.target.value.trim(); render(); });
+$('q').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); showResults(); } });
+$('go').onclick = showResults;
+tagbar.addEventListener('click', e => { const b = e.target.closest('.chip'); if (!b) return; state.tag = b.dataset.tag; render(); });
+prefSel.onchange = e => { state.pref = e.target.value; render(); };
+$('sort').onchange = e => { state.sort = e.target.value; render(); };
+$('signedSel').onchange = e => { state.signed = e.target.value; render(); };
+$('clear').onclick = clearAll;
+function onClear(e){
+  const c = e.target.closest('[data-clear]'); if (!c) return false;
+  if (c.dataset.clear === 'all') clearAll();
+  else { state[c.dataset.clear] = DEFAULT[c.dataset.clear]; syncControls(); render(); }
+  return true;
+}
+$('active').addEventListener('click', onClear);
+$('list').addEventListener('click', e => {
+  if (onClear(e)) return;
   const s = e.target.closest('button[data-signed]');
   if (s) { toast(toggleSigned(s.dataset.signed) ? '✅ 署名済みにしました。ありがとう！' : '署名済みを取り消しました'); render(); return; }
-  const b = e.target.closest('button.x'); if (!b) return;
-  shareX(D.items.find(x => x.id === b.dataset.id).share);
+  const x = e.target.closest('button[data-share]');
+  if (x) shareX(D.items.find(i => i.id === x.dataset.share).share);
 });
+// ほかのタブで「署名した」を押したときも、表示をそろえる
+addEventListener('storage', e => { if (e.key === SIGNED_KEY) render(); });
+syncControls();
+render();
 </script>
 </body>
 </html>
@@ -673,53 +1179,49 @@ SITES_TEMPLATE = r"""<!DOCTYPE html>
 <meta property="og:url" content="__SITE_URL__sites.html">
 <meta property="og:image" content="__SITE_URL__sites-compare.webp">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✍️</text></svg>">
+__HEAD__
 <style>
-""" + BASE_CSS + r"""
 :root{--voice:#e11d48;--voice-bg:#fff1f3;--change:#ca8a04;--change-bg:#fffbea}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--voice:#fb7185;--voice-bg:#2e1a20;--change:#facc15;--change-bg:#2d2914}}
-.wrap{max-width:860px;margin:0 auto;padding:0 16px 40px}
-.back{display:inline-block;margin:18px 0 6px;font-size:.88rem}
-h1{font-size:1.5rem;margin:6px 0 4px}
-.lead{color:var(--sub);margin:0 0 6px;font-size:.95rem}
-.asof{color:var(--sub);font-size:.8rem;margin:0 0 16px}
-h2{font-size:1.15rem;margin:30px 0 10px;padding-bottom:4px;border-bottom:2px solid var(--line)}
-.cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media (max-width:640px){.cols{grid-template-columns:1fr}}
-.site{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
-.site h3{margin:0;padding:10px 14px;font-size:1.1rem;color:#fff}
-.site h3 small{display:block;font-size:.8rem;font-weight:400;opacity:.95}
+.lead{margin:0 0 6px}
+.asof{color:var(--sub);font-size:.85rem;margin:0}
+.page h2.section-h{margin-top:36px}
+.cols{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+@media (min-width:640px){.cols{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.site{background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.site h3{margin:0;padding:10px 16px;font-size:1.15rem;color:#fff}
+.site h3 small{display:block;font-size:.85rem;font-weight:400;opacity:.95}
 .site.voice h3{background:var(--voice)}
 .site.change h3{background:var(--change);color:#1c1b19}
-.site dl{margin:0;padding:6px 14px 12px}
-.site dt{font-size:.78rem;color:var(--sub);margin-top:8px}
-.site dd{margin:0;font-size:.92rem}
+.site dl{margin:0;padding:6px 16px 14px}
+.site dt{font-size:.85rem;font-weight:700;color:var(--sub);margin-top:8px}
+.site dd{margin:0}
 .site ul{margin:2px 0 0;padding-left:1.2em}
-.box{border-radius:12px;padding:12px 16px;font-size:.92rem}
-.box.voice{background:var(--voice-bg);border:1.5px solid var(--voice)}
-.box.change{background:var(--change-bg);border:1.5px solid var(--change)}
-.box h3{margin:0 0 6px;font-size:1rem}
-.box ul{margin:0;padding-left:1.2em}
-.box li{margin:3px 0}
-.point{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px;font-size:.92rem}
-.point ul{margin:0;padding-left:1.2em}
-.point li{margin:4px 0}
-ol.steps{margin:0;padding-left:1.4em;font-size:.92rem}
-ol.steps li{margin:4px 0}
-figure.zu{margin:0}
-figure.zu img{width:100%;height:auto;display:block;border-radius:12px;border:1px solid var(--line)}
-figure.zu figcaption{font-size:.8rem;color:var(--sub);margin-top:4px}
+.pay{border-radius:16px;padding:14px 18px}
+.pay.voice{background:var(--voice-bg);border:2px solid var(--voice)}
+.pay.change{background:var(--change-bg);border:2px solid var(--change)}
+.pay h3{margin:0 0 6px;font-size:1.1rem}
+.pay ul{margin:0;padding-left:1.2em}
+.pay li{margin:3px 0}
+figure.zu{margin:18px 0 0}
+figure.zu img{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:14px}
+figure.zu figcaption{margin-top:4px;font-size:.85rem;color:var(--sub)}
 </style>
 </head>
-<body>
-<div class="wrap">
-<a class="back" href="./">← 署名の一覧（__SITE_NAME__）</a>
-<h1>署名サイトの違い</h1>
-<p class="lead">このページに載せている署名は、<b>Voice</b> と <b>change.org</b> の2つのサイトのものです。<br>どちらも「ネットで署名を集めるサイト」ですが、運営している会社や、お金（支援金）の使われ方が違います。</p>
-<p class="asof">※2026年10月時点の、各サイトの公式情報をもとにまとめています。</p>
+<body id="top">
+__TOPBAR__
+<main class="wrap page">
+<a class="back" href="./">← 署名の一覧にもどる</a>
+<div class="page-intro">
+  <div>
+    <h1 class="page-title">署名サイトの違い</h1>
+    <p class="lead">このページに載せている署名は、<b>Voice</b> と <b>change.org</b> の2つのサイトのものです。どちらも「ネットで署名を集めるサイト」ですが、運営している会社や、お金（支援金）の使われ方が違います。</p>
+    <p class="asof">※2026年10月時点の、各サイトの公式情報をもとにまとめています。</p>
+  </div>
+  __CHECK_IMG__
+</div>
 <figure class="zu"><a href="sites-compare.webp" target="_blank" rel="noopener"><img src="sites-compare.webp" alt="Voice と change.org の比較図" width="1225" height="972"></a><figcaption>図を押すと大きく表示されます。下に同じ内容を文章でも書いています。</figcaption></figure>
 
-<h2>ひと目でわかる違い</h2>
+<h2 class="section-h">ひと目でわかる違い</h2>
 <div class="cols">
   <section class="site voice">
     <h3>📣 Voice<small>声で、社会を動かす。</small></h3>
@@ -751,10 +1253,10 @@ figure.zu figcaption{font-size:.8rem;color:var(--sub);margin-top:4px}
   </section>
 </div>
 
-<h2>💗 支援金（お金での応援）の違い</h2>
-<p style="font-size:.92rem;margin:0 0 10px">どちらのサイトも、署名のあとに「お金で応援しませんか」という画面が出ることがあります。<b>お金を払わなくても、署名だけで参加できます。</b>ただし、払ったお金の行き先が違います。</p>
+<h2 class="section-h">💗 支援金（お金での応援）の違い</h2>
+<p>どちらのサイトも、署名のあとに「お金で応援しませんか」という画面が出ることがあります。<b>お金を払わなくても、署名だけで参加できます。</b>ただし、払ったお金の行き先が違います。</p>
 <div class="cols">
-  <div class="box voice">
+  <div class="pay voice">
     <h3>Voice の「エール」</h3>
     <ul>
       <li>寄付は「エール」として署名ページに表示されます。</li>
@@ -763,7 +1265,7 @@ figure.zu figcaption{font-size:.8rem;color:var(--sub);margin-top:4px}
       <li>エールは任意で、署名だけの参加もできます。</li>
     </ul>
   </div>
-  <div class="box change">
+  <div class="pay change">
     <h3>change.org の支援金（寄付）</h3>
     <ul>
       <li>お金は署名を始めた人ではなく、<b>change.org（運営会社）</b>に支払われます。</li>
@@ -774,15 +1276,22 @@ figure.zu figcaption{font-size:.8rem;color:var(--sub);margin-top:4px}
   </div>
 </div>
 
-<h2>✅ 署名するときのポイント</h2>
-<div class="point"><ul>
-  <li><b>お金を払わなくても署名は有効です。</b>支払い画面が出ても、そのまま閉じてかまいません。</li>
-  <li>「署名を始めた人を直接応援したい」なら、change.org の支援金ではその人には届かない点に注意しましょう。</li>
-  <li>どちらのサイトでも、署名する前に<b>概要</b>と<b>発起人</b>を確かめて、ご自身で判断してください。</li>
-</ul></div>
-
-<p style="margin-top:28px"><a class="back" href="./">← 署名の一覧にもどる</a></p>
+<h2 class="section-h">✅ 署名するときのポイント</h2>
+<div class="notes-main">
+  __PLEASE_IMG__
+  <ul class="checklist">
+    <li><b>お金を払わなくても署名は有効です。</b>支払い画面が出ても、そのまま閉じてかまいません。</li>
+    <li><b>発起人を直接応援したいときは注意。</b>change.org の支援金は、署名を始めた人には届きません。</li>
+    <li><b>概要と発起人を確かめてから。</b>どちらのサイトでも、署名する前に内容を確かめて、ご自身で判断してください。</li>
+  </ul>
 </div>
+
+<p style="margin-top:28px"><a class="btn btn-primary" href="./">← 署名の一覧にもどる</a></p>
+</main>
+__FOOTER__
+<script>
+__COMMON_JS__
+</script>
 </body>
 </html>
 """
@@ -792,6 +1301,12 @@ def build_sites_page(config):
     """署名サイトの違いを説明するページ docs/sites.html を作る。"""
     page = SITES_TEMPLATE
     for key, value in {
+        "__HEAD__": page_head(""),
+        "__TOPBAR__": topbar("", config["site_name"]),
+        "__FOOTER__": footer(""),
+        "__CHECK_IMG__": illust_img("", "check", "どちらのサイトかな？と確かめる、しょめたん"),
+        "__PLEASE_IMG__": illust_img("", "please", "手をあわせて「確かめてね」とおねがいする、しょめたん"),
+        "__COMMON_JS__": COMMON_JS,
         "__SITE_NAME__": html.escape(config["site_name"]),
         "__SITE_URL__": html.escape(config["site_url"]),
     }.items():
