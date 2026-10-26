@@ -17,7 +17,7 @@ import requests
 from collect import DATA_PATH, PREFS, fetch_by_url, load_json, new_item, save_json
 
 HERE = Path(__file__).parent
-PORT = 8765
+PORT = 8790  # ほかの作業の確認画面（8765など）とぶつからない番号
 STATUSES = ("候補", "掲載", "非掲載", "終了")
 lock = threading.Lock()
 
@@ -383,7 +383,13 @@ fetch('/api/data').then(r => r.json()).then(d => {
 
 
 def main():
-    server = ThreadingHTTPServer(("127.0.0.1", PORT), Handler)
+    # Windows では同じ番号を2つのプログラムが使えてしまい、ほかのサイトが開くことがあるので、使用中なら止める
+    ThreadingHTTPServer.allow_reuse_address = False
+    try:
+        server = ThreadingHTTPServer(("127.0.0.1", PORT), Handler)
+    except OSError:
+        print(f"番号 {PORT} はほかのプログラムが使っています。選別の画面がもう開いていないか確かめてください。")
+        return
     url = f"http://127.0.0.1:{PORT}/"
     print(f"選別の画面を開きます： {url}")
     print("終わったら、この画面で Ctrl + C を押して閉じてください。")
