@@ -291,7 +291,16 @@ if (others.length || prefCount[NONE]) {
 const P = new URLSearchParams(location.search);
 for (const k of Object.keys(state)) if (P.get(k)) state[k] = P.get(k);
 if (!chips.some(t => t.name === state.tag)) state.tag = '';
-if (![...prefSel.options].some(o => o.value === state.pref)) state.pref = '';
+// 地域は「東京都」のような正式名も受け付ける。掲載中の署名が0件の県や、都道府県でない名前でも、
+// 指定を外して全件を出すことはせず、その地域を選んだまま0件と理由を示す
+const hasPref = p => [...prefSel.options].some(o => o.value === p);
+const fullPref = p => p === '北海道' ? p : p + (p === '東京' ? '都' : p === '京都' || p === '大阪' ? '府' : '県');
+if (state.pref && !hasPref(state.pref)) {
+  const p = state.pref.normalize('NFKC').trim();
+  const short = [p, p.replace(/[都府県]$/, '')].find(x => D.prefs.includes(x));
+  state.pref = short || p;
+  if (state.pref && !hasPref(state.pref)) prefSel.insertBefore(new Option(short ? `${fullPref(short)}（0件）` : `${p}（対象外）`, state.pref), prefSel.children[1] || null);
+}
 if (!SORTS[state.sort]) state.sort = 'new';
 if (!['all', 'hide', 'only'].includes(state.signed)) state.signed = 'all';
 function syncControls(){
@@ -352,6 +361,15 @@ function card(i, done){
 }
 
 function empty(signed){
+  // 指定された地域に、掲載中の署名が1件もないとき
+  if (state.pref && state.pref !== NONE && !prefCount[state.pref]) {
+    const known = D.prefs.includes(state.pref);
+    return `<li class="empty"><img src="${D.oops.src}" alt="「あれっ？」とおどろく、しょめたん" width="${D.oops.w}" height="${D.oops.h}">
+    <p class="empty-h">${known ? `${esc(fullPref(state.pref))}に関係する掲載中の署名は0件です` : `「${esc(state.pref)}」は収集の対象外です`}</p>
+    <p>${known ? '地域は、署名のタイトルと提出先に書かれた都道府県で分けています。地域が書かれていない署名（全国向けなど）は「すべての地域」で見られます。'
+               : 'この掲示板の地域は、47都道府県です（市区町村ごとには分けていません）。「東京都」のように、都道府県の名前で指定してください。'}</p>
+    <button type="button" class="btn btn-primary" data-clear="pref">すべての地域を見る</button></li>`;
+  }
   const none = state.signed === 'only' && !D.items.some(i => signed[i.id]);
   return `<li class="empty"><img src="${D.oops.src}" alt="「あれっ？」とおどろく、しょめたん" width="${D.oops.w}" height="${D.oops.h}">
     <p class="empty-h">${none ? 'まだ「署名した」を押した署名はありません' : '条件に合う署名が見つかりませんでした'}</p>
