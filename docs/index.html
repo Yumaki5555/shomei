@@ -11,7 +11,7 @@
 <meta property="og:url" content="https://yumaki5555.github.io/shomei/">
 <meta property="og:image" content="https://yumaki5555.github.io/shomei/chara/1fb2f4a192.jpg">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="stylesheet" href="style.css?v=f95bea4d">
+<link rel="stylesheet" href="style.css?v=04d10eba">
 <link rel="icon" href="favicon.ico" sizes="48x48">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -346,7 +346,7 @@ function card(i, done){
     i.target && ['提出先', `<span class="clamp2">${esc(i.target)}</span>`],
     (i.start || i.end) && ['期間', [i.start && `${ymdJp(i.start)} 開始`, i.end && `${ymdJp(i.end)} 終了`].filter(Boolean).join('<br>')],
   ].filter(Boolean).map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('');
-  return `<li class="card${i.pick ? ' picked' : ''}${done ? ' signed' : ''}">
+  return `<li class="card">
     ${badges ? `<div class="badges">${badges}</div>` : ''}
     <h3 class="card-title"><a href="${esc(i.page)}">${esc(i.title)}</a></h3>
     ${i.summary ? `<p class="card-summary"><span class="lbl">概要</span>${esc(i.summary)}</p>` : ''}

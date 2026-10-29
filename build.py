@@ -423,8 +423,8 @@ def build_summary_pages(items, tag_defs, config, hashtag_of):
 BASE_CSS = r"""
 :root{--brand:#7548a3;--brand-dark:#613a8c;--brand-deep:#482a6b;--brand-soft:#e9def5;--brand-pale:#f6f1fb;--brand-line:#c6afe0;
   --ok:#15803d;--ok-deep:#14532d;--ok-soft:#dcfce7;
-  --ink:#1f2937;--sub:#4b5563;--line:#e3dde9;--field:#cdc3d8;--bg:#fff;--bg-soft:#f8f5fb;
-  --pick:#92400e;--pick-bg:#fff8e6;--pick-line:#f2c94c;--urgent:#b91c1c;--urgent-bg:#fef2f2;
+  --ink:#1f2937;--sub:#4b5563;--line:#e6dfed;--field:#cdc3d8;--bg:#fff;--bg-soft:#f7f5f9;
+  --pick:#926000;--pick-bg:#fff3d7;--urgent:#b91c1c;--urgent-bg:#fef2f2;
   --sv-bg:#ffe4e6;--sv-ink:#9f1239;--sc-bg:#fef9c3;--sc-ink:#713f12;
   --radius:16px;--btn-h:50px;color-scheme:light}
 *{box-sizing:border-box}
@@ -480,7 +480,7 @@ h1,h2,h3{line-height:1.45}
 .badges{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
 .badge{display:inline-flex;align-items:center;gap:5px;padding:1px 10px;border-radius:8px;background:#f1edf5;color:var(--ink);font-size:.85rem;font-weight:700;line-height:1.7}
 .badge .dot{width:.7em;height:.7em;border-radius:50%;flex:none}
-.badge.pick{background:var(--pick-bg);color:var(--pick);box-shadow:inset 0 0 0 1px var(--pick-line)}
+.badge.pick{background:var(--pick-bg);color:var(--pick)}
 .badge.left.urgent{background:var(--urgent-bg);color:var(--urgent)}
 .badge.signed{background:var(--ok);color:#fff}
 .badge.voice{background:var(--sv-bg);color:var(--sv-ink)}
@@ -607,9 +607,8 @@ input[type=search]:focus,select:focus{border-color:var(--brand);outline:3px soli
 .banner img{display:block;width:100%;border:1px solid var(--line);border-radius:16px}
 .cards{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;margin:0;padding:0;list-style:none}
 @media (min-width:880px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
-.card{display:flex;flex-direction:column;gap:12px;min-width:0;background:#fff;border:1px solid var(--line);border-top:6px solid var(--brand-soft);border-radius:var(--radius);padding:14px 16px 18px;box-shadow:0 2px 10px rgba(15,23,42,.05)}
-.card.picked{border-top-color:var(--pick-line);background:linear-gradient(var(--pick-bg),#fff 110px)}
-.card.signed{border-top-color:var(--ok)}
+/* カードはどれも同じ白いカード。おすすめ・署名済みは、上のバッジだけで見分ける（黄色はおすすめバッジだけ） */
+.card{display:flex;flex-direction:column;gap:12px;min-width:0;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px 18px;box-shadow:0 2px 10px rgba(15,23,42,.05)}
 .card-title{margin:0;font-size:1.2rem;font-weight:800;line-height:1.5;overflow-wrap:anywhere}
 .card-title a{color:var(--ink);text-decoration:none}
 .card-title a:hover{color:var(--brand-deep);text-decoration:underline}
@@ -1083,7 +1082,7 @@ function card(i, done){
     i.target && ['提出先', `<span class="clamp2">${esc(i.target)}</span>`],
     (i.start || i.end) && ['期間', [i.start && `${ymdJp(i.start)} 開始`, i.end && `${ymdJp(i.end)} 終了`].filter(Boolean).join('<br>')],
   ].filter(Boolean).map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('');
-  return `<li class="card${i.pick ? ' picked' : ''}${done ? ' signed' : ''}">
+  return `<li class="card">
     ${badges ? `<div class="badges">${badges}</div>` : ''}
     <h3 class="card-title"><a href="${esc(i.page)}">${esc(i.title)}</a></h3>
     ${i.summary ? `<p class="card-summary"><span class="lbl">概要</span>${esc(i.summary)}</p>` : ''}
