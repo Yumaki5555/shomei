@@ -11,8 +11,11 @@
 <meta property="og:url" content="https://yumaki5555.github.io/shomei/">
 <meta property="og:image" content="https://yumaki5555.github.io/shomei/chara/1fb2f4a192.jpg">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="stylesheet" href="style.css?v=4ab237e7">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✍️</text></svg>">
+<link rel="stylesheet" href="style.css?v=f95bea4d">
+<link rel="icon" href="favicon.ico" sizes="48x48">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#7548a3">
 </head>
 <body id="top">
 <header class="topbar"><div class="wrap">
@@ -106,7 +109,7 @@
 </section>
 
 <!-- はじめての方へ -->
-<section class="section soft" id="howto" aria-labelledby="howto-h">
+<section class="section" id="howto" aria-labelledby="howto-h">
   <div class="wrap">
     <h2 class="section-h" id="howto-h">署名ってどうするの？</h2>
     <p class="section-lead">はじめての方へ。ネットの署名は、3つのステップで参加できます。</p>
@@ -119,7 +122,7 @@
         <p>カードの「くわしく見る」や署名ページで、何を求める署名か、だれが始めたか（発起人）を確かめます。</p></li>
       <li class="step"><span class="step-n" aria-hidden="true">3</span><img src="illust/sign.webp" alt="しょめたんの署名用紙に、鳥さんが署名しているところ" width="500" height="256" loading="lazy" decoding="async">
         <h3>署名サイトで賛同する</h3>
-        <p>緑の「署名ページを見る」を押すと、署名サイト（Voice または change.org）が開きます。内容に賛成できたら、そのサイトで署名します。</p></li>
+        <p>紫色の「署名ページを見る」を押すと、署名サイト（Voice または change.org）が開きます。内容に賛成できたら、そのサイトで署名します。</p></li>
     </ol>
     <div class="tip"><img src="illust/thanks.webp" alt="署名用紙をかかえて、よろこぶしょめたん" width="286" height="257" loading="lazy" decoding="async">
       <p><b>署名したら「☐ 署名した」を押しておこう。</b>カードに ✅ がついて、どれに署名したかがひと目でわかります。「署名済み（✅）の署名」で、隠したり、それだけ表示したりもできます。記録はこの端末のブラウザの中だけに残り、どこにも送られません。</p>
@@ -349,7 +352,7 @@ function card(i, done){
     ${i.summary ? `<p class="card-summary"><span class="lbl">概要</span>${esc(i.summary)}</p>` : ''}
     <dl class="facts">${facts}</dl>
     <div class="card-actions">
-      <a class="btn btn-primary btn-block" href="${esc(i.url)}" target="_blank" rel="noopener" aria-label="署名ページを見る（${site}・外部サイトが新しいタブで開きます）">署名ページを見る${EXT}</a>
+      <a class="btn btn-primary btn-cta btn-block" href="${esc(i.url)}" target="_blank" rel="noopener" aria-label="署名ページを見る（${site}・外部サイトが新しいタブで開きます）">署名ページを見る${EXT}</a>
       <p class="ext-note">${site}（外部サイト）が開きます</p>
       <div class="btn-row">
         <button type="button" class="btn btn-sub" data-signed="${esc(i.id)}" aria-pressed="${done}">${done ? '✅ 署名済み' : '☐ 署名した'}</button>
