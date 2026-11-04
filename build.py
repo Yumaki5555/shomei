@@ -215,11 +215,28 @@ def page_head(root):
     return f'<link rel="stylesheet" href="{root}style.css?v={CSS_VER}">\n' + FAVICON.format(root=root)
 
 
+# 全サイト共通メニュー（入口サイトの shared/site-nav.js）。読み込めないときは中のリンクがそのまま見える。印刷には出ない
+SITE_NAV = (
+    '<style>nihon-site-nav:not(:defined){display:block;min-height:45px;padding:0 16px;background:#f4f6f6;'
+    'border-bottom:1px solid #d5dcde;font:14px/44px system-ui,sans-serif}'
+    '@media print{nihon-site-nav{display:none!important}}</style>'
+    '<nihon-site-nav><a href="https://yumaki5555.github.io/">日本を知る。</a></nihon-site-nav>'
+    '<script src="https://yumaki5555.github.io/shared/site-nav.js" data-place="manual" async></script>')
+
+
+def todokeru_links(item=None):
+    """「声を届ける」の署名マニュアルと、AIへの指示文へのリンク。戻り先は押したときに共通メニューの部品が足す"""
+    data = f' data-item="{html.escape(item, quote=True)}"' if item else ""
+    return ('<p class="todokeru-links">'
+            f'<a href="/todokeru/#/guide/signature" data-nihon-handoff{data}>署名への参加・始め方</a>'
+            f'<a href="/todokeru/#/guide/signature?s=prompts" data-nihon-handoff{data}>AIへの指示文</a></p>')
+
+
 def topbar(root, site_name, on_top=False):
     """ページ上の帯（サイト名と、よく使うページへのリンク）。"""
     top = root or "./"
     home = "" if on_top else top
-    return f"""<header class="topbar"><div class="wrap">
+    return SITE_NAV + f"""<header class="topbar"><div class="wrap">
 <a class="logo" href="{top}"><img src="{root}illust/icon.webp" alt="" width="40" height="40">{html.escape(site_name)}</a>
 <nav class="nav" aria-label="サイト内のリンク"><a href="{home}#search">さがす</a><a href="{home}#howto">署名のしかた</a><a href="{home}#notes">注意事項</a><a href="{root}sites.html">サイトの違い</a></nav>
 </div></header>"""
@@ -294,6 +311,7 @@ def main():
     for key, value in {
         "__HEAD__": page_head(""),
         "__TOPBAR__": topbar("", config["site_name"], on_top=True),
+        "__TODOKERU__": todokeru_links(),
         "__FOOTER__": footer("", on_top=True),
         "__HERO_IMG__": illust_img("", "hero", "署名用紙をかかえた、しょめたん（署名をあつめる妖精）", loading="eager"),
         "__IMG_SEARCH__": illust_img("", "search", "虫めがねで署名をさがす、しょめたん", "panel-illust"),
@@ -383,6 +401,7 @@ def build_summary_pages(items, tag_defs, config, hashtag_of):
             "__FOOTER__": footer("../"),
             "__PLEASE_IMG__": please,
             "__TITLE__": e(it["title"]),
+            "__TODOKERU__": todokeru_links(it["title"]),
             "__PICK__": '<span class="badge pick">⭐ おすすめ</span>' if it.get("pick") else "",
             "__TAGS__": "".join(f'<span class="badge"><span class="dot" style="background:{color_of.get(t, "#6b7280")}"></span>{e(t)}</span>'
                                 for t in it["tags"]),
@@ -634,6 +653,8 @@ input[type=search]:focus,select:focus{border-color:var(--brand);outline:3px soli
 .step img{display:block;height:140px;width:auto;max-width:100%;object-fit:contain;margin:6px 0 10px}
 .step h3{margin:0 0 6px;font-size:1.2rem;color:var(--brand-deep);text-align:center}
 .step p{margin:0;align-self:stretch}
+.todokeru-links{display:flex;flex-wrap:wrap;gap:0 18px;margin:12px 0 0}
+.todokeru-links a{display:inline-flex;align-items:center;min-height:44px}
 .tip{display:flex;align-items:center;gap:16px;margin-top:18px;padding:16px 18px;border-radius:20px;background:var(--brand-pale);border:2px dashed var(--brand-line)}
 .tip img{flex:none;width:110px}
 .tip p{margin:0}
@@ -722,6 +743,7 @@ __TOPBAR__
       <button type="button" class="btn btn-sub" id="share">𝕏 シェア</button>
     </div>
     <p class="note">「署名した」を押すと、この端末のブラウザの中にだけ記録されます。</p>
+    __TODOKERU__
   </div>
 </div>
 
@@ -912,6 +934,7 @@ __TOPBAR__
     <div class="tip">__IMG_THANKS__
       <p><b>署名したら「☐ 署名した」を押しておこう。</b>カードに ✅ がついて、どれに署名したかがひと目でわかります。「署名済み（✅）の署名」で、隠したり、それだけ表示したりもできます。記録はこの端末のブラウザの中だけに残り、どこにも送られません。</p>
     </div>
+    __TODOKERU__
   </div>
 </section>
 

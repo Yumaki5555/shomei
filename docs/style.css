@@ -211,6 +211,8 @@ input[type=search]:focus,select:focus{border-color:var(--brand);outline:3px soli
 .step img{display:block;height:140px;width:auto;max-width:100%;object-fit:contain;margin:6px 0 10px}
 .step h3{margin:0 0 6px;font-size:1.2rem;color:var(--brand-deep);text-align:center}
 .step p{margin:0;align-self:stretch}
+.todokeru-links{display:flex;flex-wrap:wrap;gap:0 18px;margin:12px 0 0}
+.todokeru-links a{display:inline-flex;align-items:center;min-height:44px}
 .tip{display:flex;align-items:center;gap:16px;margin-top:18px;padding:16px 18px;border-radius:20px;background:var(--brand-pale);border:2px dashed var(--brand-line)}
 .tip img{flex:none;width:110px}
 .tip p{margin:0}
